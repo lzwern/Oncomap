@@ -1,0 +1,985 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Kommunikationsplan 2026</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+  :root{--bg:#f6f8fb;--card:#fff;--text:#172033;--muted:#66748b;--line:#dbe3ef;--accent:#2563eb;--good:#15803d;--oz:#8b5cf6;--center:#64748b;--partner:#f97316;--shadow:0 12px 32px rgba(18,32,56,.12)}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--text)}
+  #map{height:100vh;width:100%}
+  .shell{position:fixed;top:12px;left:12px;bottom:12px;width:min(460px,calc(100vw - 24px));display:flex;flex-direction:column;z-index:99999;resize:horizontal;overflow:auto;min-width:360px;max-width:85vw}
+  .shell.minimized{bottom:auto;height:auto !important;max-height:none;width:min(360px,calc(100vw - 24px)) !important}
+  .shell.minimized .body{display:none}
+  .shell.minimized .card{min-height:0}
+  .head-actions{display:flex;gap:6px;align-items:center}
+  .card{background:rgba(255,255,255,.98);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);overflow:hidden;display:flex;flex-direction:column;min-height:0}
+  .head{padding:12px 14px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+  .title{font-size:16px;font-weight:900;line-height:1.15}
+  .sub{margin-top:4px;font-size:12px;color:var(--muted);line-height:1.35}
+  .iconbtn{width:34px;height:34px;border-radius:10px;border:1px solid var(--line);background:#fff;cursor:pointer;font-weight:900}
+  .body{padding:12px;overflow:auto;display:grid;gap:10px}
+  .section{border:1px solid var(--line);border-radius:12px;padding:10px;background:#fff}
+  .st{font-size:13px;font-weight:900;margin-bottom:8px}
+  .row{display:flex;gap:8px}
+  .row>*{flex:1}
+  input[type="text"],select,textarea{width:100%;padding:9px 10px;border-radius:10px;border:1px solid var(--line);background:#fff;color:var(--text);font:inherit}
+  textarea{min-height:76px;resize:vertical}
+  .btn{width:100%;padding:9px 10px;border-radius:10px;border:1px solid var(--line);background:#fff;font:inherit;font-weight:800;cursor:pointer}
+  .btn.good{background:var(--good);color:#fff;border-color:var(--good)}
+  .chips{display:flex;flex-wrap:wrap;gap:6px}
+  .chip{font-size:11px;padding:3px 8px;border-radius:999px;border:1px solid var(--line);background:#fff;color:#334155;font-weight:700;cursor:pointer}
+  .list{display:flex;flex-direction:column;gap:8px;max-height:320px;overflow:auto}
+  .item{border:1px solid var(--line);border-radius:12px;padding:10px;background:#fbfcff}
+  .item .t{font-size:12px;font-weight:900;line-height:1.25}
+  .item .m{font-size:11px;color:var(--muted);line-height:1.35;margin-top:4px}
+  .tag{display:inline-flex;align-items:center;padding:3px 8px;border-radius:999px;font-size:11px;font-weight:800;border:1px solid var(--line);margin-right:6px;background:#fff}
+  .tag.oz{color:var(--oz);border-color:rgba(139,92,246,.35);background:rgba(139,92,246,.1)}
+  .tag.center{color:#334155;border-color:rgba(100,116,139,.35);background:rgba(100,116,139,.1)}
+  .tag.partner{color:#9a3412;border-color:rgba(249,115,22,.35);background:rgba(249,115,22,.1)}
+  .tag.k1{background:#e0f2fe;color:#075985}
+  .tag.k2{background:#dbeafe;color:#1d4ed8}
+  .tag.k3{background:#fef3c7;color:#92400e}
+  .tag.k4{background:#fde68a;color:#a16207}
+  .tag.k5{background:#dcfce7;color:#166534}
+  .muted{font-size:11px;color:var(--muted);line-height:1.35}
+  .empty{border:1px dashed var(--line);border-radius:12px;padding:12px;text-align:center;color:var(--muted);font-size:12px}
+  .mini-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+  .mini-btn{border:1px solid var(--line);background:#fff;border-radius:8px;padding:6px 8px;font-size:11px;font-weight:800;cursor:pointer}
+  .statusbar{font-size:11px;color:var(--muted);white-space:pre-line}
+  .legend{position:fixed;right:12px;bottom:12px;z-index:99998;background:rgba(255,255,255,.97);border:1px solid var(--line);border-radius:12px;padding:8px 10px;box-shadow:var(--shadow);font-size:11px;color:var(--muted)}
+  a{color:var(--accent)}
+  @media (max-width:920px){
+    .shell{right:12px;width:auto;max-height:76vh}
+    .legend{left:12px;right:12px;width:auto}
+  }
+</style>
+</head>
+<body>
+<div id="map"></div>
+
+<div class="shell">
+  <div class="card">
+    <div class="head">
+      <div>
+        <div class="title">Kommunikationsplan 2026</div>
+        <div class="sub">Einfacher Workflow für Bundesland- und Organ-Auswahl, sichtbare Beziehungen und HubSpot-CSV.</div>
+      </div>
+      <div class="head-actions">
+        <button id="minimizeBtn" class="iconbtn" title="Minimieren">−</button>
+        <button id="clearFocusBtn" class="iconbtn" title="Fokus löschen">×</button>
+      </div>
+    </div>
+
+    <div class="body">
+      <div class="section">
+        <button id="reloadTop" class="btn" style="margin-bottom:10px;width:100%;">Datenbank laden</button>
+        <div class="st">Filter</div>
+        <button id="resetFiltersBtn" class="btn" type="button" style="margin-bottom:8px;">Alle Filter entfernen</button>
+        <input id="search" type="text" placeholder="Name, Ort oder Kontakt suchen …" />
+
+        <div class="chips" id="ozTypeChips" style="margin-top:8px;">
+          <button class="chip" data-oz-type="ALL">Alle OZ-Typen</button>
+          <button class="chip" data-oz-type="ONKO">ONKO</button>
+          <button class="chip" data-oz-type="VISZ">VISZ</button>
+          <button class="chip" data-oz-type="URO">URO</button>
+        </div>
+
+        <div class="chips" id="layerToggles" style="margin-top:8px;">
+          <button class="chip" data-layer="OZ">OZs</button>
+          <button class="chip" data-layer="CENTER">Organzentren</button>
+          <button class="chip" data-layer="PARTNER">Partner</button>
+          <button class="chip" data-layer="UNASSIGNED">Organzentren ohne OZ</button>
+        </div>
+
+        <div class="row" style="margin-top:8px;">
+          <select id="organFilter"><option value="ALL">Alle Organzentren</option></select>
+          <select id="regionFilter"><option value="ALL">Alle Bundesländer</option></select>
+        </div>
+
+        <div id="regionCounts" class="chips" style="margin-top:8px;"></div>
+        <div id="regionDetailList" class="list" style="margin-top:8px; display:none;"></div>
+        <div id="apiStatus" class="statusbar" style="margin-top:8px;">Lade Live-Daten…</div>
+      </div>
+
+      <div class="section">
+        <div class="st">OZ-Fokus & Auswahl</div>
+        <div id="focusPanel" class="empty">Klicke auf ein OZ. Dann siehst du die zugehörigen Organzentren und Partner und kannst alles einzeln oder gesammelt zur Auswahl hinzufügen.</div>
+      </div>
+
+      <div class="section">
+        <div class="st">Auswahl & Export</div>
+        <div class="muted">Hier siehst du deine manuell aufgebaute Auswahl. Der Export erzeugt eine CSV für Excel oder HubSpot.</div>
+        <div id="selectionSummary" class="chips" style="margin-top:8px;"></div>
+        <div id="selectionList" class="list" style="margin-top:8px;"></div>
+        <div class="row" style="margin-top:8px;">
+          <button id="clearAllSelectedBtn" class="btn" type="button">Alle entfernen</button>
+          <button id="exportBtn" class="btn good" type="button">HubSpot CSV exportieren</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="legend">
+  <div><span class="tag oz">OZ</span> <span class="tag center">Organzentrum</span> <span class="tag partner">Partner</span></div>
+  <div style="margin-top:6px;">Beim Rauszoomen nur Punkte, ohne Zahlen.</div>
+</div>
+
+<script>
+const API = {
+  clinics: "https://api.oncomap.de/api/direct/fulldb_clinics",
+  centers: "https://api.oncomap.de/api/direct/fulldb_centers",
+  oncos: "https://api.oncomap.de/api/direct/fulldb_oncos",
+  viszes: "https://api.oncomap.de/api/direct/fulldb_viszes",
+  uros: "https://api.oncomap.de/api/direct/fulldb_uros",
+  partners: "https://api.oncomap.de/api/direct/fulldb_partners",
+  oncos_centers: "https://api.oncomap.de/api/direct/fulldb_oncos_centers",
+  viszes_centers: "https://api.oncomap.de/api/direct/fulldb_viszes_centers",
+  uros_centers: "https://api.oncomap.de/api/direct/fulldb_uros_centers",
+  partners_centers: "https://api.oncomap.de/api/direct/fulldb_partners_centers"
+};
+
+const STORAGE_KEY = 'kommunikationsplan2026_state_v6';
+const UNIT_STORAGE_KEY = 'kommunikationsplan2026_units_v6';
+
+const map = L.map('map').setView([51.2, 10.4], 6);
+L.tileLayer('https://basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+  maxZoom: 19,
+  attribution: '&copy; OpenStreetMap-Mitwirkende &copy; CARTO'
+}).addTo(map);
+
+map.createPane('linesPane');
+map.getPane('linesPane').style.zIndex = 500;
+
+const ozLayer = L.layerGroup().addTo(map);
+const centerLayer = L.layerGroup().addTo(map);
+const partnerLayer = L.layerGroup().addTo(map);
+const linesLayer = L.layerGroup().addTo(map);
+
+const els = {
+  search: document.getElementById('search'),
+  organFilter: document.getElementById('organFilter'),
+  regionFilter: document.getElementById('regionFilter'),
+  reloadTop: document.getElementById('reloadTop'),
+  resetFiltersBtn: document.getElementById('resetFiltersBtn'),
+  clearFocusBtn: document.getElementById('clearFocusBtn'),
+  minimizeBtn: document.getElementById('minimizeBtn'),
+  apiStatus: document.getElementById('apiStatus'),
+  regionCounts: document.getElementById('regionCounts'),
+  regionDetailList: document.getElementById('regionDetailList'),
+  focusPanel: document.getElementById('focusPanel'),
+  selectionSummary: document.getElementById('selectionSummary'),
+  selectionList: document.getElementById('selectionList'),
+  ozTypeChips: document.getElementById('ozTypeChips'),
+  layerToggles: document.getElementById('layerToggles'),
+  clearAllSelectedBtn: document.getElementById('clearAllSelectedBtn'),
+  exportBtn: document.getElementById('exportBtn')
+};
+
+const app = {
+  all: [],
+  oz: [],
+  centers: [],
+  partners: [],
+  focusedOzId: null,
+  selectedEntityId: null,
+  ozTypeFilter: 'ALL',
+  showOZ: true,
+  showCenters: true,
+  showPartners: true,
+  showUnassignedCenters: true,
+  ozToCenters: new Map(),
+  ozToPartners: new Map(),
+  centerToPartners: new Map(),
+  centerToOz: new Map(),
+  partnerToOz: new Map(),
+  byId: new Map()
+};
+
+function esc(s){
+  return String(s ?? '').replace(/[&<>"']/g, m => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  }[m]));
+}
+
+function num(x){
+  if(x == null) return null;
+  const v = Number(String(x).trim().replace(',', '.'));
+  return Number.isFinite(v) ? v : null;
+}
+
+function parseCertDate(v){
+  try{
+    const o = typeof v === 'string' ? JSON.parse(v) : v;
+    const dates = Object.values(o || {}).filter(x => /^\d{4}-\d{2}-\d{2}$/.test(String(x)));
+    return dates.length ? dates.sort().slice(-1)[0] : '';
+  }catch{
+    return '';
+  }
+}
+
+function markerColor(rec){
+  if(rec.level === 'CENTER') return '#64748b';
+  if(rec.level === 'PARTNER') return '#f97316';
+  if((rec.organ || '').toLowerCase().includes('visz')) return '#22c55e';
+  if((rec.organ || '').toLowerCase().includes('uro')) return '#f59e0b';
+  return '#8b5cf6';
+}
+
+function stageTag(stage){
+  return `<span class="tag k${stage || 1}">MD ${stage || 1}</span>`;
+}
+
+async function fetchJson(url){
+  const r = await fetch(url, { cache:'no-store', mode:'cors' });
+  if(!r.ok) throw new Error(`${r.status} ${r.statusText}`);
+  return await r.json();
+}
+
+function normalizeOZ(rows, organ){
+  return (rows || []).map((r, idx) => {
+    const lat = num(r.latitude), lon = num(r.longitude);
+    if(lat === null || lon === null) return null;
+    return {
+      id: `OZ:${organ}:${r.id || idx}`,
+      rawId: String(r.id || idx),
+      level:'OZ',
+      organ,
+      region:r.state || '',
+      name:r.inst1 || r.name || `OZ ${r.id || idx}`,
+      subtitle:r.inst2 || '',
+      city:r.loc || r.ort || '',
+      street:r.street || '',
+      zip:r.zip || '',
+      phone:r.phone || '',
+      email:r.email || r.mail || r.p_email || '',
+      website:r.url || '',
+      contact:[r.p_title,r.p_fname,r.p_lname].filter(Boolean).join(' ').trim(),
+      regNr:r.reg_nr || '',
+      certUntil:parseCertDate(r.certificate_types),
+      latitude:lat,
+      longitude:lon,
+      mdStatus:'Neu',
+      mdStage:1,
+      owner:'',
+      note:''
+    };
+  }).filter(Boolean);
+}
+
+function normalizeCenters(rows){
+  return (rows || []).map((r, idx) => {
+    const lat = num(r.latitude), lon = num(r.longitude);
+    if(lat === null || lon === null) return null;
+    return {
+      id:`CENTER:${r.id || idx}`,
+      rawId:String(r.id || idx),
+      level:'CENTER',
+      organ:r.organ || '',
+      region:r.state || '',
+      name:r.inst1 || r.name || `Organzentrum ${r.id || idx}`,
+      subtitle:r.organ || '',
+      city:r.loc || r.ort || '',
+      street:r.street || '',
+      zip:r.zip || '',
+      phone:r.phone || '',
+      email:r.email || r.mail || r.p_email || '',
+      website:r.url || '',
+      contact:[r.p_title,r.p_fname,r.p_lname].filter(Boolean).join(' ').trim(),
+      regNr:r.reg_nr || '',
+      certUntil:parseCertDate(r.certificate_types),
+      latitude:lat,
+      longitude:lon
+    };
+  }).filter(Boolean);
+}
+
+function normalizePartners(rows){
+  return (rows || []).map((r, idx) => {
+    const lat = num(r.latitude), lon = num(r.longitude);
+    if(lat === null || lon === null) return null;
+    return {
+      id:`PARTNER:${r.id || idx}`,
+      rawId:String(r.id || idx),
+      level:'PARTNER',
+      organ:'',
+      region:r.state || '',
+      name:r.inst1 || r.name || `Partner ${r.id || idx}`,
+      subtitle:'Partner',
+      city:r.loc || r.ort || '',
+      street:r.street || '',
+      zip:r.zip || '',
+      phone:r.phone || '',
+      email:r.email || r.mail || r.p_email || '',
+      website:r.url || '',
+      contact:[r.p_title,r.p_fname,r.p_lname].filter(Boolean).join(' ').trim(),
+      latitude:lat,
+      longitude:lon
+    };
+  }).filter(Boolean);
+}
+
+function buildRelations(oncosCenters, viszesCenters, urosCenters, partnersCenters){
+  const ozToCenters = new Map();
+  const centerToPartners = new Map();
+  const ozToPartners = new Map();
+  const centerToOz = new Map();
+  const partnerToOz = new Map();
+
+  function addOzCenters(prefix, rows){
+    (rows || []).forEach(r => {
+      const ozId = `OZ:${prefix}:${String(r.n_id)}`;
+      const centerId = `CENTER:${String(r.c_id)}`;
+      if(!ozToCenters.has(ozId)) ozToCenters.set(ozId, new Set());
+      ozToCenters.get(ozId).add(centerId);
+      if(!centerToOz.has(centerId)) centerToOz.set(centerId, new Set());
+      centerToOz.get(centerId).add(ozId);
+    });
+  }
+
+  addOzCenters('ONKO', oncosCenters);
+  addOzCenters('VISZ', viszesCenters);
+  addOzCenters('URO', urosCenters);
+
+  (partnersCenters || []).forEach(r => {
+    const centerId = `CENTER:${String(r.c_id)}`;
+    const partnerId = `PARTNER:${String(r.p_id)}`;
+    if(!centerToPartners.has(centerId)) centerToPartners.set(centerId, new Set());
+    centerToPartners.get(centerId).add(partnerId);
+  });
+
+  ozToCenters.forEach((centerIds, ozId) => {
+    const pset = new Set();
+    centerIds.forEach(centerId => {
+      (centerToPartners.get(centerId) || new Set()).forEach(pid => {
+        pset.add(pid);
+        if(!partnerToOz.has(pid)) partnerToOz.set(pid, new Set());
+        partnerToOz.get(pid).add(ozId);
+      });
+    });
+    ozToPartners.set(ozId, pset);
+  });
+
+  app.ozToCenters = ozToCenters;
+  app.centerToPartners = centerToPartners;
+  app.ozToPartners = ozToPartners;
+  app.centerToOz = centerToOz;
+  app.partnerToOz = partnerToOz;
+}
+
+function saveState(){
+  const payload = {
+    records: app.oz.map(x => ({
+      id:x.id, mdStatus:x.mdStatus, mdStage:x.mdStage, owner:x.owner, note:x.note
+    }))
+  };
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+}
+
+function loadStateFromStorage(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw) return;
+    const saved = JSON.parse(raw);
+    const savedMap = new Map((saved.records || []).map(r => [r.id, r]));
+    app.oz.forEach(oz => {
+      const s = savedMap.get(oz.id);
+      if(s){
+        oz.mdStatus = s.mdStatus || oz.mdStatus;
+        oz.mdStage = s.mdStage || oz.mdStage;
+        oz.owner = s.owner || oz.owner;
+        oz.note = s.note || oz.note;
+      }
+    });
+  }catch{}
+}
+
+function getSelectedUnits(){
+  return new Set(JSON.parse(localStorage.getItem(UNIT_STORAGE_KEY) || '[]'));
+}
+
+function saveSelectedUnits(set){
+  localStorage.setItem(UNIT_STORAGE_KEY, JSON.stringify([...set]));
+}
+
+function fillFilters(){
+  const organs = [...new Set(app.centers.map(x => x.organ).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'de'));
+  const regions = [...new Set(app.all.map(x => x.region).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'de'));
+  els.organFilter.innerHTML = '<option value="ALL">Alle Organzentren</option>' + organs.map(v => `<option value="${esc(v)}">${esc(v)}</option>`).join('');
+  els.regionFilter.innerHTML = '<option value="ALL">Alle Bundesländer</option>' + regions.map(v => `<option value="${esc(v)}">${esc(v)}</option>`).join('');
+  renderOzTypeChips();
+  renderLayerToggles();
+}
+
+function renderOzTypeChips(){
+  els.ozTypeChips?.querySelectorAll('[data-oz-type]').forEach(btn => {
+    const active = btn.dataset.ozType === app.ozTypeFilter;
+    btn.style.borderColor = active ? 'rgba(37,99,235,.45)' : '';
+    btn.style.background = active ? 'rgba(37,99,235,.10)' : '';
+    btn.style.color = active ? '#1d4ed8' : '';
+  });
+}
+
+function renderLayerToggles(){
+  els.layerToggles?.querySelectorAll('[data-layer]').forEach(btn => {
+    const layer = btn.dataset.layer;
+    const active = layer==='OZ' ? app.showOZ : layer==='CENTER' ? app.showCenters : layer==='PARTNER' ? app.showPartners : app.showUnassignedCenters;
+    btn.style.borderColor = active ? 'rgba(37,99,235,.45)' : '';
+    btn.style.background = active ? 'rgba(37,99,235,.10)' : '';
+    btn.style.color = active ? '#1d4ed8' : '';
+  });
+}
+
+function applyFilters(records){
+  const q = (els.search.value || '').trim().toLowerCase();
+  const organ = els.organFilter.value || 'ALL';
+  const region = els.regionFilter.value || 'ALL';
+  const ozType = app.ozTypeFilter || 'ALL';
+
+  return records.filter(x => {
+    if(x.level === 'OZ' && !app.showOZ) return false;
+
+    if(x.level === 'CENTER'){
+      const hasOZ = app.centerToOz.get(x.id) && app.centerToOz.get(x.id).size;
+      if(hasOZ && !app.showCenters) return false;
+      if(!hasOZ && !app.showUnassignedCenters) return false;
+    }
+
+    if(x.level === 'PARTNER' && !app.showPartners) return false;
+
+    if(ozType !== 'ALL'){
+      if(x.level === 'OZ' && x.organ !== ozType) return false;
+      if(x.level === 'CENTER'){
+        const parentSet = app.centerToOz.get(x.id);
+        if(parentSet && parentSet.size){
+          const ok = [...parentSet].some(ozId => app.byId.get(ozId)?.organ === ozType);
+          if(!ok) return false;
+        }
+      }
+      if(x.level === 'PARTNER'){
+        const parentSet = app.partnerToOz.get(x.id);
+        if(parentSet && parentSet.size){
+          const ok = [...parentSet].some(ozId => app.byId.get(ozId)?.organ === ozType);
+          if(!ok) return false;
+        }
+      }
+    }
+
+    if(organ !== 'ALL'){
+      if(x.level === 'OZ') return false;
+      if(x.level === 'CENTER' && x.organ !== organ) return false;
+      if(x.level === 'PARTNER'){
+        const linkedCenterIds = [...app.centerToPartners.entries()]
+          .filter(([cid, pids]) => pids.has(x.id))
+          .map(([cid]) => cid);
+        const linkedCenters = linkedCenterIds.map(cid => app.byId.get(cid)).filter(Boolean);
+        if(!linkedCenters.some(c => c.organ === organ)) return false;
+      }
+    }
+
+    if(region !== 'ALL' && x.region !== region) return false;
+
+    if(q){
+      const hay = `${x.name} ${x.city} ${x.contact} ${x.subtitle} ${x.email || ''} ${x.website || ''}`.toLowerCase();
+      if(!hay.includes(q)) return false;
+    }
+
+    return true;
+  });
+}
+
+function getVisibleRecords(){
+  const filtered = applyFilters(app.all);
+  return filtered.filter(x => {
+    if(!app.focusedOzId) return true;
+    if(x.id === app.focusedOzId || x.id === app.selectedEntityId) return true;
+    if(x.level === 'CENTER') return (app.ozToCenters.get(app.focusedOzId) || new Set()).has(x.id);
+    if(x.level === 'PARTNER') return (app.ozToPartners.get(app.focusedOzId) || new Set()).has(x.id);
+    return false;
+  });
+}
+
+function getScopedRecords(kind='ALL'){
+  return applyFilters(app.all).filter(x => kind === 'ALL' ? true : x.level === kind);
+}
+
+function renderMarkers(){
+  ozLayer.clearLayers();
+  centerLayer.clearLayers();
+  partnerLayer.clearLayers();
+  linesLayer.clearLayers();
+
+  const visible = getVisibleRecords();
+  const zoom = map.getZoom();
+
+  visible.forEach(rec => {
+    if(rec.level === 'CENTER' && zoom <= 6 && !app.focusedOzId) return;
+    if(rec.level === 'PARTNER' && zoom <= 8 && !app.focusedOzId) return;
+
+    const focusedOz = rec.id === app.focusedOzId;
+    const selectedEntity = rec.id === app.selectedEntityId;
+    const radius = focusedOz ? 10 : selectedEntity ? 8 : rec.level === 'OZ' ? (zoom <= 6 ? 8 : 7) : rec.level === 'CENTER' ? 5 : 4;
+
+    const marker = L.circleMarker([rec.latitude, rec.longitude], {
+      radius,
+      color: markerColor(rec),
+      weight: focusedOz || selectedEntity ? 4 : (rec.level === 'OZ' ? 3 : 2),
+      fillOpacity: focusedOz || selectedEntity ? 1 : 0.88,
+      fillColor: markerColor(rec)
+    }).bindPopup(`<b>${esc(rec.name)}</b><br><span style="color:#64748b">${esc(rec.city || '')}</span>`);
+
+    marker.on('click', () => {
+      if(rec.level === 'OZ'){
+        app.focusedOzId = rec.id;
+        app.selectedEntityId = null;
+      } else {
+        app.selectedEntityId = rec.id;
+        const parentSet = rec.level === 'CENTER' ? app.centerToOz.get(rec.id) : app.partnerToOz.get(rec.id);
+        app.focusedOzId = parentSet && parentSet.size ? [...parentSet][0] : null;
+      }
+      renderAll();
+    });
+
+    if(rec.level === 'OZ') ozLayer.addLayer(marker);
+    else if(rec.level === 'CENTER') centerLayer.addLayer(marker);
+    else partnerLayer.addLayer(marker);
+  });
+
+  if(app.focusedOzId){
+    const oz = app.byId.get(app.focusedOzId);
+    if(oz){
+      const ozPos = [oz.latitude, oz.longitude];
+      (app.ozToCenters.get(oz.id) || new Set()).forEach(centerId => {
+        const c = app.byId.get(centerId);
+        if(!c) return;
+        L.polyline([ozPos, [c.latitude, c.longitude]], {
+          color:'#94a3b8', weight:2.2, opacity:0.6, pane:'linesPane'
+        }).addTo(linesLayer);
+
+        (app.centerToPartners.get(centerId) || new Set()).forEach(partnerId => {
+          const p = app.byId.get(partnerId);
+          if(!p) return;
+          L.polyline([[c.latitude, c.longitude],[p.latitude, p.longitude]], {
+            color:'#f97316', weight:1.6, opacity:0.45, pane:'linesPane'
+          }).addTo(linesLayer);
+        });
+      });
+    }
+  }
+}
+
+function getPartnerDetails(rec){
+  if(!rec || rec.level !== 'PARTNER') return { parentOzs: [], linkedCenters: [] };
+  const parentSet = app.partnerToOz.get(rec.id);
+  const parentOzs = parentSet ? [...parentSet].map(id => app.byId.get(id)).filter(Boolean) : [];
+  const linkedCenters = [...app.centerToPartners.entries()]
+    .filter(([cid, pids]) => pids.has(rec.id))
+    .map(([cid]) => app.byId.get(cid))
+    .filter(Boolean);
+  return { parentOzs, linkedCenters };
+}
+
+function regionListCard(rec, selectedSet){
+  const selected = selectedSet.has(rec.id);
+  const partnerExtra = rec.level === 'PARTNER' ? getPartnerDetails(rec) : null;
+
+  return `<div class="item">
+    <div class="t"><span class="tag ${rec.level==='OZ'?'oz':(rec.level==='CENTER'?'center':'partner')}">${rec.level==='CENTER'?'Organzentrum':(rec.level==='PARTNER'?'Partner':'OZ')}</span>${esc(rec.name)}</div>
+    <div class="m">${esc(rec.subtitle || '')} · ${esc(rec.city || '')}</div>
+    <div class="m">Kontakt: ${esc(rec.contact || '—')}</div>
+    <div class="m">Email: ${rec.email ? `<a href="mailto:${esc(rec.email)}">${esc(rec.email)}</a>` : '—'}</div>
+    <div class="m">Telefon: ${esc(rec.phone || '—')}</div>
+    <div class="m">Website: ${rec.website ? `<a href="${esc(rec.website)}" target="_blank" rel="noreferrer">${esc(rec.website)}</a>` : '—'}</div>
+    ${partnerExtra ? `${partnerExtra.parentOzs.length ? `<div class="m">Arbeitet mit OZs: ${esc(partnerExtra.parentOzs.map(x => x.name).join(' · '))}</div>` : `<div class="m">Keine OZ-Zuordnung</div>`}${partnerExtra.linkedCenters.length ? `<div class="m">Verknüpfte Organzentren: ${esc(partnerExtra.linkedCenters.map(x => x.name).join(' · '))}</div>` : ''}` : ''}
+    <div class="mini-actions">
+      <button class="mini-btn" data-region-add="${esc(rec.id)}">${selected ? 'In Auswahl' : 'Zur Auswahl'}</button>
+      <button class="mini-btn" data-region-open="${esc(rec.id)}">Details</button>
+    </div>
+  </div>`;
+}
+
+function bindRegionCountActions(){
+  els.regionCounts.querySelectorAll('[data-region-chip]').forEach(el => el.addEventListener('click', e => {
+    const kind = e.currentTarget.dataset.regionChip;
+    const scoped = getScopedRecords(kind === 'ALL' ? 'ALL' : kind);
+    const selected = getSelectedUnits();
+    els.regionDetailList.style.display = 'flex';
+
+    const region = els.regionFilter.value || 'ALL';
+    const organ = els.organFilter.value || 'ALL';
+    const query = (els.search.value || '').trim();
+    const label = kind === 'ALL' ? 'Alle hinzufügen' : kind === 'OZ' ? 'Alle OZ hinzufügen' : kind === 'CENTER' ? 'Alle Organzentren hinzufügen' : 'Alle Partner hinzufügen';
+
+    els.regionDetailList.innerHTML =
+      `<div class="item">
+        <div class="t">Listenaktion</div>
+        <div class="m">Aktuelle Filter: ${region === 'ALL' ? 'Alle Bundesländer' : esc(region)}${organ !== 'ALL' ? ' · ' + esc(organ) : ''}${query ? ' · Suche: ' + esc(query) : ''}</div>
+        <div class="mini-actions">
+          <button class="mini-btn" id="addAllFromRegionListBtn">${label}</button>
+        </div>
+      </div>` +
+      (scoped.length ? scoped.map(x => regionListCard(x, selected)).join('') : '<div class="empty">Keine Einträge in dieser kombinierten Ansicht.</div>');
+
+    document.getElementById('addAllFromRegionListBtn')?.addEventListener('click', () => {
+      const set = getSelectedUnits();
+      scoped.forEach(x => set.add(x.id));
+      saveSelectedUnits(set);
+      renderOverview();
+      renderSelectionList();
+      if(app.focusedOzId || app.selectedEntityId) renderFocusPanel();
+    });
+
+    els.regionDetailList.querySelectorAll('[data-region-add]').forEach(btn => btn.addEventListener('click', ev => {
+      const id = ev.currentTarget.dataset.regionAdd;
+      const set = getSelectedUnits();
+      if(set.has(id)) set.delete(id); else set.add(id);
+      saveSelectedUnits(set);
+      renderOverview();
+      renderSelectionList();
+      if(app.focusedOzId || app.selectedEntityId) renderFocusPanel();
+    }));
+
+    els.regionDetailList.querySelectorAll('[data-region-open]').forEach(btn => btn.addEventListener('click', ev => {
+      const id = ev.currentTarget.dataset.regionOpen;
+      const rec = app.byId.get(id);
+      if(!rec) return;
+      if(rec.level === 'OZ'){
+        app.focusedOzId = rec.id;
+        app.selectedEntityId = null;
+      } else {
+        app.selectedEntityId = rec.id;
+        const parentSet = rec.level === 'CENTER' ? app.centerToOz.get(rec.id) : app.partnerToOz.get(rec.id);
+        app.focusedOzId = parentSet && parentSet.size ? [...parentSet][0] : null;
+      }
+      renderAll();
+    }));
+  }));
+}
+
+function renderOverview(){
+  const region = els.regionFilter.value || 'ALL';
+  const organ = els.organFilter.value || 'ALL';
+  const query = (els.search.value || '').trim();
+  const scoped = getScopedRecords('ALL');
+
+  const ozCount = scoped.filter(x => x.level === 'OZ').length;
+  const centerCount = scoped.filter(x => x.level === 'CENTER').length;
+  const partnerCount = scoped.filter(x => x.level === 'PARTNER').length;
+
+  els.regionCounts.innerHTML = `<button class="chip" data-region-chip="ALL">${region === 'ALL' ? 'Alle Bundesländer' : region}</button>${organ !== 'ALL' ? `<button class="chip" data-region-chip="ALL">${esc(organ)}</button>` : ''}${query ? `<button class="chip" data-region-chip="ALL">Suche: ${esc(query)}</button>` : ''}<button class="chip" data-region-chip="OZ">${ozCount} OZ</button><button class="chip" data-region-chip="CENTER">${centerCount} Organzentren</button><button class="chip" data-region-chip="PARTNER">${partnerCount} Partner</button>`;
+
+  bindRegionCountActions();
+}
+
+function marketPositionText(oz, centers, partners){
+  return `Zu diesem OZ gehören ${centers.length} Organzentren und ${partners.length} Partner. So könnt ihr das OZ als Einheit auswählen oder gezielt einzelne kontaktierbare Einheiten für den HubSpot-Export markieren.`;
+}
+
+function unitCard(rec, selectedSet){
+  const selected = selectedSet.has(rec.id);
+  return `<div class="item">
+    <div class="t"><span class="tag ${rec.level==='OZ'?'oz':(rec.level==='CENTER'?'center':'partner')}">${rec.level==='CENTER'?'Organzentrum':(rec.level==='PARTNER'?'Partner':'OZ')}</span>${esc(rec.name)}</div>
+    <div class="m">${esc(rec.subtitle || '')} · ${esc(rec.city || '')}</div>
+    <div class="m">Kontakt: ${esc(rec.contact || '—')}</div>
+    <div class="m">Email: ${rec.email ? `<a href="mailto:${esc(rec.email)}">${esc(rec.email)}</a>` : '—'}</div>
+    <div class="m">Telefon: ${esc(rec.phone || '—')}</div>
+    <div class="m">Website: ${rec.website ? `<a href="${esc(rec.website)}" target="_blank">${esc(rec.website)}</a>` : '—'}</div>
+    <div class="mini-actions"><button class="mini-btn" data-unit="${esc(rec.id)}">${selected ? 'In Auswahl' : 'Zur Auswahl'}</button></div>
+  </div>`;
+}
+
+function renderFocusPanel(){
+  const selectedUnits = getSelectedUnits();
+  const selectedEntity = app.selectedEntityId ? app.byId.get(app.selectedEntityId) : null;
+
+  if(selectedEntity && selectedEntity.level !== 'OZ'){
+    const parentSet = selectedEntity.level === 'CENTER' ? app.centerToOz.get(selectedEntity.id) : app.partnerToOz.get(selectedEntity.id);
+    const parentOzs = parentSet ? [...parentSet].map(id => app.byId.get(id)).filter(Boolean) : [];
+    const linkedCenters = selectedEntity.level === 'PARTNER'
+      ? [...app.centerToPartners.entries()].filter(([cid, pids]) => pids.has(selectedEntity.id)).map(([cid]) => app.byId.get(cid)).filter(Boolean)
+      : [];
+
+    els.focusPanel.innerHTML = `<div class="item">
+      <div class="t"><span class="tag ${selectedEntity.level==='CENTER'?'center':'partner'}">${selectedEntity.level==='CENTER'?'Organzentrum':'Partner'}</span>${esc(selectedEntity.name)}</div>
+      <div class="m">${esc(selectedEntity.subtitle || '')} · ${esc(selectedEntity.city || '')}</div>
+      <div class="m">Kontakt: ${esc(selectedEntity.contact || '—')}</div>
+      <div class="m">Email: ${selectedEntity.email ? `<a href="mailto:${esc(selectedEntity.email)}">${esc(selectedEntity.email)}</a>` : '—'}</div>
+      <div class="m">Telefon: ${esc(selectedEntity.phone || '—')}</div>
+      <div class="m">Website: ${selectedEntity.website ? `<a href="${esc(selectedEntity.website)}" target="_blank" rel="noreferrer">${esc(selectedEntity.website)}</a>` : '—'}</div>
+      <div class="mini-actions"><button class="mini-btn" data-unit="${esc(selectedEntity.id)}">${selectedUnits.has(selectedEntity.id)?'In Auswahl':'Zur Auswahl'}</button></div>
+    </div>
+    <div class="item">
+      <div class="t">Zuordnung</div>
+      ${parentOzs.length ? `<div class="m">Zugeordnet zu: ${esc(parentOzs.map(x => x.name).join(' · '))}</div>` : `<div class="m">Keine OZ-Zuordnung</div>`}
+      ${linkedCenters.length ? `<div class="m">Verknüpfte Organzentren: ${esc(linkedCenters.map(x => x.name).join(' · '))}</div>` : ''}
+    </div>`;
+
+    els.focusPanel.querySelectorAll('[data-unit]').forEach(el => el.addEventListener('click', e => {
+      const id = e.currentTarget.dataset.unit;
+      const set = getSelectedUnits();
+      if(set.has(id)) set.delete(id); else set.add(id);
+      saveSelectedUnits(set);
+      renderFocusPanel();
+      renderSelectionList();
+    }));
+    return;
+  }
+
+  const oz = app.byId.get(app.focusedOzId);
+  if(!oz){
+    els.focusPanel.innerHTML = '<div class="empty">Klicke auf ein OZ. Dann siehst du die zugehörigen Organzentren und Partner und kannst alles einzeln oder gesammelt zur Auswahl hinzufügen.</div>';
+    return;
+  }
+
+  const centers = [...(app.ozToCenters.get(oz.id) || new Set())].map(id => app.byId.get(id)).filter(Boolean);
+  const partners = [...(app.ozToPartners.get(oz.id) || new Set())].map(id => app.byId.get(id)).filter(Boolean);
+
+  els.focusPanel.innerHTML = `<div class="item">
+    <div class="t"><span class="tag oz">${esc(oz.organ)}</span>${stageTag(oz.mdStage)} ${esc(oz.name)}</div>
+    <div class="m">${esc(oz.subtitle || '')} · ${esc(oz.city || '')}</div>
+    <div class="m">Kontakt: ${esc(oz.contact || '—')} · Telefon: ${esc(oz.phone || '—')}</div>
+    <div class="m">Email: ${oz.email ? `<a href="mailto:${esc(oz.email)}">${esc(oz.email)}</a>` : '—'}</div>
+    <div class="m">Website: ${oz.website ? `<a href="${esc(oz.website)}" target="_blank" rel="noreferrer">${esc(oz.website)}</a>` : '—'}</div>
+    <div class="m" style="margin-top:8px;"><b>Strategie:</b> ${esc(marketPositionText(oz, centers, partners))}</div>
+    <div class="row" style="margin-top:8px;">
+      <select id="ozStatusSelect">${['Neu','In Prüfung','In Kontakt','In Entwicklung','Priorisiert'].map(v => `<option value="${v}" ${oz.mdStatus===v?'selected':''}>${v}</option>`).join('')}</select>
+      <select id="ozStageSelect">${[1,2,3,4,5].map(v => `<option value="${v}" ${Number(oz.mdStage)===v?'selected':''}>MD ${v}</option>`).join('')}</select>
+    </div>
+    <textarea id="ozNoteInput" style="margin-top:8px;">${esc(oz.note || '')}</textarea>
+    <div class="mini-actions">
+      <button id="saveOzBtn" class="mini-btn">OZ speichern</button>
+      <button class="mini-btn" data-unit="${esc(oz.id)}">${selectedUnits.has(oz.id)?'OZ in Auswahl':'OZ zur Auswahl'}</button>
+      <button id="selectAllRelatedBtn" class="mini-btn">Alle auswählen</button>
+    </div>
+  </div>
+  <div class="item">
+    <div class="t">Zugehörige Einheiten</div>
+    <div class="m">${centers.length} Organzentren · ${partners.length} Partner</div>
+  </div>
+  <div class="list">
+    ${centers.length ? centers.map(x => unitCard(x, selectedUnits)).join('') : '<div class="empty">Keine zugeordneten Organzentren.</div>'}
+    ${partners.length ? partners.map(x => unitCard(x, selectedUnits)).join('') : '<div class="empty">Keine zugeordneten Partner.</div>'}
+  </div>`;
+
+  document.getElementById('saveOzBtn')?.addEventListener('click', () => {
+    oz.mdStatus = document.getElementById('ozStatusSelect').value;
+    oz.mdStage = Number(document.getElementById('ozStageSelect').value);
+    oz.note = document.getElementById('ozNoteInput').value.trim();
+    saveState();
+    renderAll();
+  });
+
+  document.getElementById('selectAllRelatedBtn')?.addEventListener('click', () => {
+    const set = getSelectedUnits();
+    set.add(oz.id);
+    centers.forEach(x => set.add(x.id));
+    partners.forEach(x => set.add(x.id));
+    saveSelectedUnits(set);
+    renderAll();
+  });
+
+  els.focusPanel.querySelectorAll('[data-unit]').forEach(el => el.addEventListener('click', e => {
+    const id = e.currentTarget.dataset.unit;
+    const set = getSelectedUnits();
+    if(set.has(id)) set.delete(id); else set.add(id);
+    saveSelectedUnits(set);
+    renderFocusPanel();
+    renderSelectionList();
+  }));
+}
+
+function renderSelectionList(){
+  const selected = [...getSelectedUnits()].map(id => app.byId.get(id)).filter(Boolean);
+  const ozCount = selected.filter(x => x.level === 'OZ').length;
+  const centerCount = selected.filter(x => x.level === 'CENTER').length;
+  const partnerCount = selected.filter(x => x.level === 'PARTNER').length;
+
+  els.selectionSummary.innerHTML = `<span class="chip">${selected.length} ausgewählt</span><span class="chip">${ozCount} OZ</span><span class="chip">${centerCount} Organzentren</span><span class="chip">${partnerCount} Partner</span>`;
+
+  if(!selected.length){
+    els.selectionList.innerHTML = '<div class="empty">Noch keine Auswahl aufgebaut.</div>';
+    return;
+  }
+
+  els.selectionList.innerHTML = selected.map(rec => `<div class="item">
+    <div class="t"><span class="tag ${rec.level==='OZ'?'oz':(rec.level==='CENTER'?'center':'partner')}">${rec.level==='CENTER'?'Organzentrum':(rec.level==='PARTNER'?'Partner':'OZ')}</span>${esc(rec.name)}</div>
+    <div class="m">${esc(rec.city || '')}</div>
+    <div class="mini-actions"><button class="mini-btn" data-remove="${esc(rec.id)}">Entfernen</button></div>
+  </div>`).join('');
+
+  els.selectionList.querySelectorAll('[data-remove]').forEach(el => el.addEventListener('click', e => {
+    const set = getSelectedUnits();
+    set.delete(e.currentTarget.dataset.remove);
+    saveSelectedUnits(set);
+    renderSelectionList();
+    renderFocusPanel();
+  }));
+}
+
+function exportCsv(){
+  const selectedUnits = getSelectedUnits();
+  const rows = [...selectedUnits].map(id => app.byId.get(id)).filter(Boolean);
+  if(!rows.length){
+    alert('Es gibt noch keine ausgewählten Datensätze.');
+    return;
+  }
+
+  const out = rows.map(x => ({
+    company: x.name,
+    email: x.email || '',
+    phone: x.phone,
+    website: x.website,
+    address: x.street,
+    zip: x.zip,
+    city: x.city,
+    state: x.region,
+    country: 'Deutschland',
+    md_level: x.level,
+    md_organ: x.organ,
+    md_contact_person: x.contact,
+    md_registration_number: x.regNr || '',
+    md_certificate_until: x.certUntil || '',
+    md_status: x.mdStatus || '',
+    md_stage_1_5: x.mdStage || '',
+    md_note: x.note || ''
+  }));
+
+  const headers = Object.keys(out[0]);
+  const csv = [headers.join(',')]
+    .concat(out.map(row => headers.map(h => csvEscape(row[h])).join(',')))
+    .join('\n');
+
+  downloadFile('kommunikationsplan_2026.csv', csv, 'text/csv;charset=utf-8');
+}
+
+function csvEscape(v){
+  const s = String(v ?? '');
+  return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+}
+
+function downloadFile(name, content, type){
+  const blob = new Blob([content], {type});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = name;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
+function renderAll(){
+  renderOzTypeChips();
+  renderLayerToggles();
+  renderMarkers();
+  renderOverview();
+  renderFocusPanel();
+  renderSelectionList();
+}
+
+async function loadAll(){
+  els.apiStatus.textContent = 'Lade Live-Daten…';
+  try{
+    const [centers, oncos, viszes, uros, partners, oncosCenters, viszesCenters, urosCenters, partnersCenters] = await Promise.all([
+      fetchJson(API.centers),
+      fetchJson(API.oncos),
+      fetchJson(API.viszes),
+      fetchJson(API.uros),
+      fetchJson(API.partners),
+      fetchJson(API.oncos_centers),
+      fetchJson(API.viszes_centers),
+      fetchJson(API.uros_centers),
+      fetchJson(API.partners_centers)
+    ]);
+
+    app.oz = [...normalizeOZ(oncos, 'ONKO'), ...normalizeOZ(viszes, 'VISZ'), ...normalizeOZ(uros, 'URO')];
+    app.centers = normalizeCenters(centers);
+    app.partners = normalizePartners(partners);
+    app.all = [...app.oz, ...app.centers, ...app.partners];
+    app.byId = new Map(app.all.map(x => [x.id, x]));
+
+    buildRelations(oncosCenters, viszesCenters, urosCenters, partnersCenters);
+    loadStateFromStorage();
+    fillFilters();
+    renderAll();
+
+    els.apiStatus.innerHTML = `Live geladen: ${app.oz.length} OZ · ${app.centers.length} Organzentren · ${app.partners.length} Partner`;
+  }catch(err){
+    console.error(err);
+    els.apiStatus.innerHTML = `Fehler beim Laden\n${esc(err.message || String(err))}`;
+  }
+}
+
+els.reloadTop?.addEventListener('click', loadAll);
+
+els.minimizeBtn?.addEventListener('click', () => {
+  const shell = document.querySelector('.shell');
+  if(!shell) return;
+  const isMin = shell.classList.toggle('minimized');
+  els.minimizeBtn.textContent = isMin ? '+' : '−';
+  els.minimizeBtn.title = isMin ? 'Öffnen' : 'Minimieren';
+  if(isMin){
+    shell.style.height = 'auto';
+  } else {
+    shell.style.height = '';
+  }
+});
+
+els.resetFiltersBtn.addEventListener('click', () => {
+  els.search.value = '';
+  els.organFilter.value = 'ALL';
+  els.regionFilter.value = 'ALL';
+  app.ozTypeFilter = 'ALL';
+  app.showOZ = true;
+  app.showCenters = true;
+  app.showPartners = true;
+  app.showUnassignedCenters = true;
+  app.focusedOzId = null;
+  app.selectedEntityId = null;
+  renderAll();
+});
+
+els.clearFocusBtn.addEventListener('click', () => {
+  app.focusedOzId = null;
+  app.selectedEntityId = null;
+  els.focusPanel.innerHTML = '<div class="empty">Fokus entfernt. Wähle ein OZ oder Element.</div>';
+  renderAll();
+});
+
+els.search.addEventListener('input', renderAll);
+els.organFilter.addEventListener('change', renderAll);
+els.regionFilter.addEventListener('change', renderAll);
+
+els.ozTypeChips?.querySelectorAll('[data-oz-type]').forEach(btn => btn.addEventListener('click', e => {
+  app.ozTypeFilter = e.currentTarget.dataset.ozType || 'ALL';
+  renderAll();
+}));
+
+els.layerToggles?.querySelectorAll('[data-layer]').forEach(btn => btn.addEventListener('click', e => {
+  const layer = e.currentTarget.dataset.layer;
+  if(layer === 'OZ') app.showOZ = !app.showOZ;
+  if(layer === 'CENTER') app.showCenters = !app.showCenters;
+  if(layer === 'PARTNER') app.showPartners = !app.showPartners;
+  if(layer === 'UNASSIGNED') app.showUnassignedCenters = !app.showUnassignedCenters;
+  renderAll();
+}));
+
+els.exportBtn.addEventListener('click', exportCsv);
+
+els.clearAllSelectedBtn.addEventListener('click', () => {
+  saveSelectedUnits(new Set());
+  renderSelectionList();
+  renderFocusPanel();
+});
+
+map.on('zoomend', renderMarkers);
+
+loadAll();
+</script>
+</body>
+</html>
