@@ -1,0 +1,90 @@
+name: Update Oncomap Data
+
+on:
+  schedule:
+    # Runs every night at 02:00 UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch: # Allow manual trigger from GitHub UI
+
+jobs:
+  fetch-and-cache:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Fetch all Oncomap API endpoints
+        run: |
+          mkdir -p data
+
+          echo "Fetching clinics..."
+          curl -sSf "https://api.oncomap.de/api/direct/fulldb_clinics" -o data/fulldb_clinics.json
+
+          echo "Fetching centers..."
+          curl -sSf "https://api.oncomap.de/api/direct/fulldb_centers" -o data/fulldb_centers.json
+
+          echo "Fetching oncos..."
+          curl -sSf "https://api.oncomap.de/api/direct/fulldb_oncos" -o data/fulldb_oncos.json
+
+          echo "Fetching viszes..."
+          curl -sSf "https://api.oncomap.de/api/direct/fulldb_viszes" -o data/fulldb_viszes.json
+
+          echo "Fetching uros..."
+          curl -sSf "https://api.oncomap.de/api/direct/fulldb_uros" -o data/fulldb_uros.json
+
+          echo "Fetching partners..."
+          curl -sSf "https://api.oncomap.de/api/direct/fulldb_partners" -o data/fulldb_partners.json
+
+          echo "Fetching oncos_centers..."
+          curl -sSf "https://api.oncomap.de/api/direct/fulldb_oncos_centers" -o data/fulldb_oncos_centers.json
+
+          echo "Fetching viszes_centers..."
+          curl -sSf "https://api.oncomap.de/api/direct/fulldb_viszes_centers" -o data/fulldb_viszes_centers.json
+
+          echo "Fetching uros_centers..."
+          curl -sSf "https://api.oncomap.de/api/direct/fulldb_uros_centers" -o data/fulldb_uros_centers.json
+
+          echo "Fetching partners_centers..."
+          curl -sSf "https://api.oncomap.de/api/direct/fulldb_partners_centers" -o data/fulldb_partners_centers.json
+
+      - name: Bundle into single data.json with metadata
+        run: |
+          node -e "
+            const fs = require('fs');
+            const keys = [
+              'fulldb_clinics','fulldb_centers',
+              'fulldb_oncos','fulldb_viszes','fulldb_uros',
+              'fulldb_partners',
+              'fulldb_oncos_centers','fulldb_viszes_centers',
+              'fulldb_uros_centers','fulldb_partners_centers'
+            ];
+            const bundle = { _updated: new Date().toISOString() };
+            keys.forEach(k => {
+              try {
+                bundle[k] = JSON.parse(fs.readFileSync('data/' + k + '.json', 'utf8'));
+              } catch(e) {
+                console.error('Failed to parse', k, e.message);
+                bundle[k] = [];
+              }
+            });
+            fs.writeFileSync('data/data.json', JSON.stringify(bundle));
+            console.log('Bundled data.json — updated:', bundle._updated);
+            Object.entries(bundle).forEach(([k,v]) => {
+              if(Array.isArray(v)) console.log(k + ':', v.length, 'records');
+            });
+          "
+
+      - name: Commit and push updated data
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/
+          if git diff --staged --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "chore: update oncomap data [$(date -u '+%Y-%m-%d %H:%M UTC')]"
+            git push
+          fi
