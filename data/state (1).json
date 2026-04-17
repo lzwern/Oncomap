@@ -1,27 +1,5 @@
 {
   "version": 2,
-  "exported": "2026-04-17T09:07:43.625Z",
-  "oz": [
-    {
-      "id": "OZ:ONKO:935",
-      "wave": "Wave 1",
-      "outreachStatus": "New",
-      "owner": "Luca",
-      "note": ""
-    },
-    {
-      "id": "OZ:ONKO:971",
-      "wave": "Wave 3",
-      "outreachStatus": "New",
-      "owner": "Daniel",
-      "note": "Testing"
-    },
-    {
-      "id": "OZ:ONKO:1050",
-      "wave": "Wave 2",
-      "outreachStatus": "New",
-      "owner": "Maren",
-      "note": "Test"
-    }
-  ]
+  "exported": "2026-04-17T09:11:20.558Z",
+  "oz": []
 }
