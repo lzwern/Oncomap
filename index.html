@@ -1,984 +1,911 @@
 <!doctype html>
-<html lang="de">
+<html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Kommunikationsplan 2026</title>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>DKG Outreach 2026 · Resilience</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
-  :root{--bg:#f6f8fb;--card:#fff;--text:#172033;--muted:#66748b;--line:#dbe3ef;--accent:#2563eb;--good:#15803d;--oz:#8b5cf6;--center:#64748b;--partner:#f97316;--shadow:0 12px 32px rgba(18,32,56,.12)}
-  *{box-sizing:border-box}
-  body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--text)}
-  #map{height:100vh;width:100%}
-  .shell{position:fixed;top:12px;left:12px;bottom:12px;width:min(460px,calc(100vw - 24px));display:flex;flex-direction:column;z-index:99999;resize:horizontal;overflow:auto;min-width:360px;max-width:85vw}
-  .shell.minimized{bottom:auto;height:auto !important;max-height:none;width:min(360px,calc(100vw - 24px)) !important}
-  .shell.minimized .body{display:none}
-  .shell.minimized .card{min-height:0}
-  .head-actions{display:flex;gap:6px;align-items:center}
-  .card{background:rgba(255,255,255,.98);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);overflow:hidden;display:flex;flex-direction:column;min-height:0}
-  .head{padding:12px 14px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
-  .title{font-size:16px;font-weight:900;line-height:1.15}
-  .sub{margin-top:4px;font-size:12px;color:var(--muted);line-height:1.35}
-  .iconbtn{width:34px;height:34px;border-radius:10px;border:1px solid var(--line);background:#fff;cursor:pointer;font-weight:900}
-  .body{padding:12px;overflow:auto;display:grid;gap:10px}
-  .section{border:1px solid var(--line);border-radius:12px;padding:10px;background:#fff}
-  .st{font-size:13px;font-weight:900;margin-bottom:8px}
-  .row{display:flex;gap:8px}
-  .row>*{flex:1}
-  input[type="text"],select,textarea{width:100%;padding:9px 10px;border-radius:10px;border:1px solid var(--line);background:#fff;color:var(--text);font:inherit}
-  textarea{min-height:76px;resize:vertical}
-  .btn{width:100%;padding:9px 10px;border-radius:10px;border:1px solid var(--line);background:#fff;font:inherit;font-weight:800;cursor:pointer}
-  .btn.good{background:var(--good);color:#fff;border-color:var(--good)}
-  .chips{display:flex;flex-wrap:wrap;gap:6px}
-  .chip{font-size:11px;padding:3px 8px;border-radius:999px;border:1px solid var(--line);background:#fff;color:#334155;font-weight:700;cursor:pointer}
-  .list{display:flex;flex-direction:column;gap:8px;max-height:320px;overflow:auto}
-  .item{border:1px solid var(--line);border-radius:12px;padding:10px;background:#fbfcff}
-  .item .t{font-size:12px;font-weight:900;line-height:1.25}
-  .item .m{font-size:11px;color:var(--muted);line-height:1.35;margin-top:4px}
-  .tag{display:inline-flex;align-items:center;padding:3px 8px;border-radius:999px;font-size:11px;font-weight:800;border:1px solid var(--line);margin-right:6px;background:#fff}
-  .tag.oz{color:var(--oz);border-color:rgba(139,92,246,.35);background:rgba(139,92,246,.1)}
-  .tag.center{color:#334155;border-color:rgba(100,116,139,.35);background:rgba(100,116,139,.1)}
-  .tag.partner{color:#9a3412;border-color:rgba(249,115,22,.35);background:rgba(249,115,22,.1)}
-  .tag.k1{background:#e0f2fe;color:#075985}
-  .tag.k2{background:#dbeafe;color:#1d4ed8}
-  .tag.k3{background:#fef3c7;color:#92400e}
-  .tag.k4{background:#fde68a;color:#a16207}
-  .tag.k5{background:#dcfce7;color:#166534}
-  .muted{font-size:11px;color:var(--muted);line-height:1.35}
-  .empty{border:1px dashed var(--line);border-radius:12px;padding:12px;text-align:center;color:var(--muted);font-size:12px}
-  .mini-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
-  .mini-btn{border:1px solid var(--line);background:#fff;border-radius:8px;padding:6px 8px;font-size:11px;font-weight:800;cursor:pointer}
-  .statusbar{font-size:11px;color:var(--muted);white-space:pre-line}
-  .legend{position:fixed;right:12px;bottom:12px;z-index:99998;background:rgba(255,255,255,.97);border:1px solid var(--line);border-radius:12px;padding:8px 10px;box-shadow:var(--shadow);font-size:11px;color:var(--muted)}
-  a{color:var(--accent)}
-  @media (max-width:920px){
-    .shell{right:12px;width:auto;max-height:76vh}
-    .legend{left:12px;right:12px;width:auto}
-  }
+:root {
+  --bg:#f4f6f9; --surface:#fff; --surface2:#f8f9fb;
+  --border:#e4e8ef; --border2:#d0d7e3;
+  --text:#1a2235; --muted:#6b7a96; --muted2:#9aa3b5;
+  --onko:#5b4cf5; --onko-bg:rgba(91,76,245,.08); --onko-bdr:rgba(91,76,245,.22);
+  --visz:#0d9e6e; --visz-bg:rgba(13,158,110,.08); --visz-bdr:rgba(13,158,110,.22);
+  --uro:#d97706; --uro-bg:rgba(217,119,6,.08); --uro-bdr:rgba(217,119,6,.22);
+  --center:#0077cc; --center-bg:rgba(0,119,204,.08); --center-bdr:rgba(0,119,204,.22);
+  --partner:#e05a2b; --partner-bg:rgba(224,90,43,.08); --partner-bdr:rgba(224,90,43,.22);
+  --accent:#2563eb; --accent-h:#1d4ed8;
+  --ok:#16a34a; --warn:#d97706; --red:#dc2626;
+  --w1:#5b4cf5; --w2:#0d9e6e; --w3:#d97706; --w4:#e05a2b;
+  --r:9px; --rl:14px;
+  --sh:0 1px 3px rgba(26,34,53,.08),0 4px 16px rgba(26,34,53,.06);
+  --sans:'Instrument Sans',system-ui,sans-serif;
+  --serif:'Instrument Serif',Georgia,serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;font-family:var(--sans);background:var(--bg);color:var(--text);font-size:13px}
+#map{position:fixed;inset:0;z-index:0}
+.leaflet-tile-pane{filter:saturate(.85) brightness(1.04)}
+.panel{position:fixed;top:14px;left:14px;bottom:14px;width:420px;z-index:9999;display:flex;flex-direction:column;gap:6px;pointer-events:none}
+.panel>*{pointer-events:all}
+.hdr{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:13px 15px 11px;box-shadow:var(--sh);display:flex;align-items:center;justify-content:space-between;gap:10px;flex-shrink:0}
+.hdr-brand{display:flex;align-items:center;gap:10px}
+.hdr-logo{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,var(--accent) 0%,#7c3aed 100%);display:flex;align-items:center;justify-content:center;color:#fff;font-family:var(--serif);font-style:italic;font-size:16px;flex-shrink:0;box-shadow:0 2px 8px rgba(37,99,235,.3)}
+.hdr-title{font-size:13px;font-weight:700;letter-spacing:-.01em}
+.hdr-sub{font-size:11px;color:var(--muted);margin-top:2px}
+.hdr-actions{display:flex;gap:5px}
+.icon-btn{width:30px;height:30px;border-radius:8px;border:1px solid var(--border);background:var(--surface2);color:var(--muted);font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .13s}
+.icon-btn:hover{border-color:var(--border2);background:var(--surface);color:var(--text)}
+.status-bar{display:flex;align-items:center;gap:7px;flex-wrap:wrap;padding:7px 11px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);font-size:11px;color:var(--muted);font-family:'SF Mono','Fira Code',monospace;flex-shrink:0;box-shadow:var(--sh)}
+.sd{width:7px;height:7px;border-radius:50%;background:var(--muted2);flex-shrink:0}
+.sd.live{background:var(--ok);box-shadow:0 0 0 3px rgba(22,163,74,.15);animation:pulse 2.5s infinite}
+.sd.load{background:var(--warn);animation:pulse .9s infinite}
+.sd.err{background:var(--red)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+.tabs{display:flex;gap:2px;padding:3px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);flex-shrink:0;box-shadow:var(--sh)}
+.tab{flex:1;padding:7px 4px;font-size:11px;font-weight:600;border-radius:7px;border:none;background:transparent;color:var(--muted);cursor:pointer;transition:all .13s;display:flex;align-items:center;justify-content:center;gap:4px;white-space:nowrap}
+.tab:hover{color:var(--text);background:var(--surface2)}
+.tab.active{background:var(--surface2);color:var(--text);box-shadow:0 1px 3px rgba(26,34,53,.08);font-weight:700}
+.tbadge{background:var(--accent);color:#fff;border-radius:999px;padding:1px 5px;font-size:9px;font-weight:700;min-width:16px;text-align:center}
+.body{overflow-y:auto;overflow-x:hidden;flex:1;min-height:0;display:flex;flex-direction:column;gap:6px;scrollbar-width:thin;scrollbar-color:var(--border2) transparent}
+.pane{display:none;flex-direction:column;gap:6px}
+.pane.active{display:flex}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);box-shadow:var(--sh);overflow:hidden}
+.ch{padding:9px 13px 8px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.ct{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.07em}
+.cb{padding:10px 12px;display:flex;flex-direction:column;gap:7px}
+input[type=text],select,textarea{width:100%;padding:7px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);color:var(--text);font:inherit;font-size:12px;transition:border-color .13s;appearance:none}
+input[type=text]:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(37,99,235,.08)}
+input[type=text]::placeholder{color:var(--muted2)}
+textarea{min-height:52px;resize:vertical}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='%236b7a96' d='M4 6l4 4 4-4'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center;padding-right:26px}
+.r2{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.chips{display:flex;flex-wrap:wrap;gap:4px}
+.chip{font-size:10px;padding:4px 9px;border-radius:999px;border:1px solid var(--border);background:var(--surface2);color:var(--muted);font-weight:600;cursor:pointer;transition:all .12s}
+.chip:hover{border-color:var(--border2);color:var(--text)}
+.chip.on{background:rgba(37,99,235,.07);border-color:rgba(37,99,235,.3);color:var(--accent);font-weight:700}
+.tag{display:inline-flex;align-items:center;padding:2px 7px;border-radius:999px;font-size:10px;font-weight:700;border:1px solid}
+.tag.onko{color:var(--onko);border-color:var(--onko-bdr);background:var(--onko-bg)}
+.tag.visz{color:var(--visz);border-color:var(--visz-bdr);background:var(--visz-bg)}
+.tag.uro{color:var(--uro);border-color:var(--uro-bdr);background:var(--uro-bg)}
+.tag.center{color:var(--center);border-color:var(--center-bdr);background:var(--center-bg)}
+.tag.partner{color:var(--partner);border-color:var(--partner-bdr);background:var(--partner-bg)}
+.tag.w1{color:var(--w1);border-color:rgba(91,76,245,.25);background:rgba(91,76,245,.07)}
+.tag.w2{color:var(--w2);border-color:rgba(13,158,110,.25);background:rgba(13,158,110,.07)}
+.tag.w3{color:var(--w3);border-color:rgba(217,119,6,.25);background:rgba(217,119,6,.07)}
+.tag.w4{color:var(--w4);border-color:rgba(224,90,43,.25);background:rgba(224,90,43,.07)}
+.sb{display:inline-flex;align-items:center;padding:2px 8px;border-radius:999px;font-size:10px;font-weight:700;border:1px solid}
+.s-new{color:#6b7a96;border-color:#d0d7e3;background:#f4f6f9}
+.s-contacted{color:var(--accent);border-color:rgba(37,99,235,.25);background:rgba(37,99,235,.07)}
+.s-replied{color:var(--visz);border-color:var(--visz-bdr);background:var(--visz-bg)}
+.s-meeting{color:var(--uro);border-color:var(--uro-bdr);background:var(--uro-bg)}
+.s-notinterested{color:var(--red);border-color:rgba(220,38,38,.25);background:rgba(220,38,38,.06)}
+.stat-row{display:flex;gap:6px}
+.stat{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:8px 10px}
+.sv{font-size:22px;font-weight:700;font-family:var(--serif);font-style:italic;line-height:1}
+.sl{font-size:10px;color:var(--muted);font-weight:600;margin-top:2px;text-transform:uppercase;letter-spacing:.05em}
+.item{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:9px 11px;transition:border-color .12s}
+.item:hover{border-color:var(--border2)}
+.item.focused{border-color:var(--accent);background:rgba(37,99,235,.02)}
+.item.highlighted{border-color:var(--center);background:rgba(0,119,204,.02)}
+.itags{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:4px}
+.iname{font-size:12px;font-weight:700;line-height:1.3}
+.imeta{font-size:11px;color:var(--muted);line-height:1.55;margin-top:3px}
+.imeta a{color:var(--center);text-decoration:none}
+.imeta a:hover{text-decoration:underline}
+.iactions{display:flex;gap:4px;flex-wrap:wrap;margin-top:7px}
+.warn-cert{font-size:10px;color:var(--warn);font-weight:700;margin-top:3px}
+.mb{font-size:10px;font-weight:600;padding:4px 9px;border-radius:7px;border:1px solid var(--border);background:var(--surface);color:var(--muted);cursor:pointer;transition:all .12s}
+.mb:hover{color:var(--text);border-color:var(--border2)}
+.mb.p{background:var(--accent);border-color:var(--accent);color:#fff}
+.mb.p:hover{background:var(--accent-h)}
+.mb.sel{background:var(--onko-bg);border-color:var(--onko-bdr);color:var(--onko)}
+.mb.d{background:rgba(220,38,38,.06);border-color:rgba(220,38,38,.2);color:var(--red)}
+.btn{width:100%;padding:8px 12px;border-radius:var(--r);border:1px solid var(--border);background:var(--surface2);color:var(--text);font:inherit;font-size:12px;font-weight:600;cursor:pointer;transition:all .13s}
+.btn:hover{border-color:var(--border2);background:var(--surface)}
+.btn.p{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.p:hover{background:var(--accent-h)}
+.btn.exp{background:rgba(22,163,74,.07);border-color:rgba(22,163,74,.3);color:var(--ok);font-weight:700}
+.btn.exp:hover{background:rgba(22,163,74,.12)}
+.btn.imp{background:rgba(37,99,235,.07);border-color:rgba(37,99,235,.3);color:var(--accent);font-weight:700}
+.empty{border:1px dashed var(--border2);border-radius:var(--r);padding:16px;text-align:center;color:var(--muted2);font-size:11px;line-height:1.6}
+
+/* Pipeline wave board */
+.wave-board{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-bottom:2px}
+.wc{border:1.5px solid var(--border);border-radius:var(--r);padding:8px 10px;background:var(--surface2);cursor:pointer;transition:all .15s}
+.wc:hover{border-color:var(--border2)}
+.wc.wactive{border-color:currentColor}
+.wc-label{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;margin-bottom:2px}
+.wc-num{font-size:22px;font-weight:700;font-family:var(--serif);font-style:italic;line-height:1}
+.wc-stats{font-size:9px;color:var(--muted);margin-top:3px;line-height:1.5}
+.wave-filter-bar{display:flex;gap:4px;margin-bottom:4px}
+.wfchip{font-size:10px;padding:4px 10px;border-radius:999px;border:1px solid var(--border);background:var(--surface2);color:var(--muted);font-weight:600;cursor:pointer;transition:all .12s}
+.wfchip:hover{border-color:var(--border2);color:var(--text)}
+.wfchip.on{font-weight:700}
+
+/* State banner */
+.state-banner{display:flex;align-items:center;gap:8px;padding:8px 12px;background:rgba(37,99,235,.06);border:1px solid rgba(37,99,235,.2);border-radius:var(--r);font-size:11px;color:var(--accent)}
+.state-banner.warn{background:rgba(217,119,6,.06);border-color:rgba(217,119,6,.25);color:var(--warn)}
+
+#legend{position:fixed;right:14px;bottom:14px;z-index:9998;background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:10px 13px;box-shadow:0 4px 24px rgba(26,34,53,.12);font-size:11px;display:flex;flex-direction:column;gap:5px}
+.lr{display:flex;align-items:center;gap:7px;color:var(--muted)}
+.ld{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+@media(max-width:860px){.panel{right:14px;width:auto;bottom:46vh}#legend{display:none}}
 </style>
 </head>
 <body>
 <div id="map"></div>
 
-<div class="shell">
-  <div class="card">
-    <div class="head">
+<div class="panel">
+  <div class="hdr">
+    <div class="hdr-brand">
+      <div class="hdr-logo">R</div>
       <div>
-        <div class="title">Kommunikationsplan 2026</div>
-        <div class="sub">Einfacher Workflow für Bundesland- und Organ-Auswahl, sichtbare Beziehungen und HubSpot-CSV.</div>
+        <div class="hdr-title">DKG Outreach 2026</div>
+        <div class="hdr-sub">Resilience · Oncomap Data Tool</div>
       </div>
-      <div class="head-actions">
-        <button id="minimizeBtn" class="iconbtn" title="Minimieren">−</button>
-        <button id="clearFocusBtn" class="iconbtn" title="Fokus löschen">×</button>
+    </div>
+    <div class="hdr-actions">
+      <button class="icon-btn" id="reloadBtn" title="Reload data">↻</button>
+      <button class="icon-btn" id="clearFocusBtn" title="Clear map focus">✕</button>
+      <button class="icon-btn" id="collapseBtn" title="Collapse panel">−</button>
+    </div>
+  </div>
+
+  <div class="status-bar">
+    <span class="sd load" id="statusDot"></span>
+    <span id="statusText">Loading data…</span>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" data-tab="explore">🔍 Explore</button>
+    <button class="tab" data-tab="focus">📍 Focus</button>
+    <button class="tab" data-tab="outreach">📤 Outreach <span class="tbadge" id="selBadge">0</span></button>
+    <button class="tab" data-tab="pipeline">📊 Pipeline</button>
+    <button class="tab" data-tab="sync">☁ Sync</button>
+  </div>
+
+  <div class="body" id="panelBody">
+
+    <!-- EXPLORE -->
+    <div class="pane active" id="pane-explore">
+      <div class="card">
+        <div class="ch"><span class="ct">Filters</span><button id="resetBtn" class="mb">Reset all</button></div>
+        <div class="cb">
+          <input type="text" id="search" placeholder="Search name, city, contact…"/>
+          <div class="r2">
+            <select id="organFilter"><option value="ALL">All organs</option></select>
+            <select id="regionFilter"><option value="ALL">All regions</option></select>
+          </div>
+          <div>
+            <div style="font-size:10px;font-weight:700;color:var(--muted);margin-bottom:5px;text-transform:uppercase;letter-spacing:.06em">Centre type</div>
+            <div class="chips" id="ozTypeChips">
+              <button class="chip on" data-oz-type="ALL">All</button>
+              <button class="chip" data-oz-type="ONKO"><span style="color:var(--onko)">●</span> ONKO</button>
+              <button class="chip" data-oz-type="VISZ"><span style="color:var(--visz)">●</span> VISZ</button>
+              <button class="chip" data-oz-type="URO"><span style="color:var(--uro)">●</span> URO</button>
+            </div>
+          </div>
+          <div>
+            <div style="font-size:10px;font-weight:700;color:var(--muted);margin-bottom:5px;text-transform:uppercase;letter-spacing:.06em">Map layers</div>
+            <div class="chips" id="layerChips">
+              <button class="chip on" data-layer="OZ">OZ</button>
+              <button class="chip on" data-layer="CENTER">Organ centres</button>
+              <button class="chip on" data-layer="PARTNER">Partners</button>
+              <button class="chip on" data-layer="UNASSIGNED">No OZ</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="stat-row">
+        <div class="stat"><div class="sv" id="statOZ">—</div><div class="sl">OZ total</div></div>
+        <div class="stat"><div class="sv" id="statCenter">—</div><div class="sl">Organ centres</div></div>
+        <div class="stat"><div class="sv" id="statPartner">—</div><div class="sl">Partners</div></div>
+      </div>
+      <div class="card">
+        <div class="ch">
+          <span class="ct">Results</span>
+          <button id="addAllBtn" class="mb p">Add all to outreach</button>
+        </div>
+        <div style="max-height:340px;overflow-y:auto;display:flex;flex-direction:column;gap:4px;padding:10px 12px" id="exploreList">
+          <div class="empty">Loading…</div>
+        </div>
       </div>
     </div>
 
-    <div class="body">
-      <div class="section">
-        <button id="reloadTop" class="btn" style="margin-bottom:10px;width:100%;">Datenbank laden</button>
-        <div class="st">Filter</div>
-        <button id="resetFiltersBtn" class="btn" type="button" style="margin-bottom:8px;">Alle Filter entfernen</button>
-        <input id="search" type="text" placeholder="Name, Ort oder Kontakt suchen …" />
-
-        <div class="chips" id="ozTypeChips" style="margin-top:8px;">
-          <button class="chip" data-oz-type="ALL">Alle OZ-Typen</button>
-          <button class="chip" data-oz-type="ONKO">ONKO</button>
-          <button class="chip" data-oz-type="VISZ">VISZ</button>
-          <button class="chip" data-oz-type="URO">URO</button>
-        </div>
-
-        <div class="chips" id="layerToggles" style="margin-top:8px;">
-          <button class="chip" data-layer="OZ">OZs</button>
-          <button class="chip" data-layer="CENTER">Organzentren</button>
-          <button class="chip" data-layer="PARTNER">Partner</button>
-          <button class="chip" data-layer="UNASSIGNED">Organzentren ohne OZ</button>
-        </div>
-
-        <div class="row" style="margin-top:8px;">
-          <select id="organFilter"><option value="ALL">Alle Organzentren</option></select>
-          <select id="regionFilter"><option value="ALL">Alle Bundesländer</option></select>
-        </div>
-
-        <div id="regionCounts" class="chips" style="margin-top:8px;"></div>
-        <div id="regionDetailList" class="list" style="margin-top:8px; display:none;"></div>
-        <div id="apiStatus" class="statusbar" style="margin-top:8px;">Lade Live-Daten…</div>
+    <!-- FOCUS -->
+    <div class="pane" id="pane-focus">
+      <div id="focusPanel">
+        <div class="empty">Click an OZ on the map to explore its linked organ centres and partners.<br><br>Lines will show the network. Click anywhere on the map to clear.</div>
       </div>
+    </div>
 
-      <div class="section">
-        <div class="st">OZ-Fokus & Auswahl</div>
-        <div id="focusPanel" class="empty">Klicke auf ein OZ. Dann siehst du die zugehörigen Organzentren und Partner und kannst alles einzeln oder gesammelt zur Auswahl hinzufügen.</div>
-      </div>
-
-      <div class="section">
-        <div class="st">Auswahl & Export</div>
-        <div class="muted">Hier siehst du deine manuell aufgebaute Auswahl. Der Export erzeugt eine CSV für Excel oder HubSpot.</div>
-        <div id="selectionSummary" class="chips" style="margin-top:8px;"></div>
-        <div id="selectionList" class="list" style="margin-top:8px;"></div>
-        <div class="row" style="margin-top:8px;">
-          <button id="clearAllSelectedBtn" class="btn" type="button">Alle entfernen</button>
-          <button id="exportBtn" class="btn good" type="button">HubSpot CSV exportieren</button>
+    <!-- OUTREACH -->
+    <div class="pane" id="pane-outreach">
+      <div class="card">
+        <div class="ch"><span class="ct">Outreach selection</span><button id="clearAllBtn" class="mb d">Clear all</button></div>
+        <div class="cb">
+          <div class="chips" id="outreachSummary"></div>
+          <div style="max-height:340px;overflow-y:auto;display:flex;flex-direction:column;gap:4px" id="outreachList">
+            <div class="empty">No accounts selected yet.</div>
+          </div>
+          <button id="exportCsvBtn" class="btn exp">⬇ Export HubSpot CSV</button>
+          <div style="font-size:10px;color:var(--muted);line-height:1.6">Fields: company, email, phone, city, state, oz_type, dkg_reg_nr, cert_until, wave, outreach_status.</div>
         </div>
       </div>
     </div>
+
+    <!-- PIPELINE -->
+    <div class="pane" id="pane-pipeline">
+      <div class="card">
+        <div class="ch"><span class="ct">Wave overview</span></div>
+        <div class="cb">
+          <div class="wave-board" id="waveBoard"></div>
+          <div class="wave-filter-bar" id="waveFilterBar">
+            <button class="wfchip on" data-wf="ALL">All waves</button>
+            <button class="wfchip" data-wf="Wave 1" style="color:var(--w1)">Wave 1</button>
+            <button class="wfchip" data-wf="Wave 2" style="color:var(--w2)">Wave 2</button>
+            <button class="wfchip" data-wf="Wave 3" style="color:var(--w3)">Wave 3</button>
+            <button class="wfchip" data-wf="Wave 4" style="color:var(--w4)">Wave 4</button>
+          </div>
+          <div style="max-height:380px;overflow-y:auto;display:flex;flex-direction:column;gap:4px" id="pipelineList">
+            <div class="empty">No OZs assigned to a wave yet.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SYNC -->
+    <div class="pane" id="pane-sync">
+      <div class="card">
+        <div class="ch"><span class="ct">State management</span></div>
+        <div class="cb">
+          <div class="state-banner" id="stateBanner">
+            ℹ️ State is stored locally in this browser. Export to share with your team.
+          </div>
+          <div style="font-size:11px;color:var(--muted);line-height:1.6">
+            <strong>How it works:</strong> Wave assignments, outreach status and notes are saved in your browser. To share with the team, export the state file and commit it to the GitHub repo as <code>data/state.json</code>. Anyone opening the tool then loads the shared state automatically.
+          </div>
+          <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-top:4px">Export</div>
+          <button id="exportStateBtn" class="btn exp">⬇ Export state.json</button>
+          <div style="font-size:10px;color:var(--muted);line-height:1.5">Download and commit to <code>data/state.json</code> in your GitHub repo. GitHub Actions will serve it automatically.</div>
+
+          <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-top:4px">Import</div>
+          <button id="importStateBtn" class="btn imp">⬆ Import state.json</button>
+          <input type="file" id="importFileInput" accept=".json" style="display:none">
+          <div style="font-size:10px;color:var(--muted);line-height:1.5">Load a state.json file exported by a teammate to sync their wave assignments and notes into your session.</div>
+
+          <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-top:4px">Current state</div>
+          <div id="syncStats" style="font-size:11px;color:var(--muted);line-height:1.8"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="ch"><span class="ct">GitHub workflow</span></div>
+        <div class="cb">
+          <div style="font-size:11px;color:var(--text);line-height:1.7">
+            <strong>Daily auto-update (already active):</strong><br>
+            GitHub Actions fetches fresh Oncomap data every night at 02:00 UTC → saves to <code>data/data.json</code>.<br><br>
+            <strong>Team state sharing:</strong><br>
+            1. Assign OZs to waves in the Focus tab<br>
+            2. Export <code>state.json</code> here<br>
+            3. Commit to repo: <code>data/state.json</code><br>
+            4. Team members reload the tool → shared state loads automatically<br><br>
+            <strong>What's saved in state.json:</strong><br>
+            Wave assignment · Outreach status · Owner · Notes — for every OZ you've edited.
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>
 
-<div class="legend">
-  <div><span class="tag oz">OZ</span> <span class="tag center">Organzentrum</span> <span class="tag partner">Partner</span></div>
-  <div style="margin-top:6px;">Beim Rauszoomen nur Punkte, ohne Zahlen.</div>
+<div id="legend">
+  <div class="lr"><div class="ld" style="background:var(--onko)"></div><span>ONKO — Oncology centre</span></div>
+  <div class="lr"><div class="ld" style="background:var(--visz)"></div><span>VISZ — Visceral centre</span></div>
+  <div class="lr"><div class="ld" style="background:var(--uro)"></div><span>URO — Urology centre</span></div>
+  <div class="lr"><div class="ld" style="background:var(--center)"></div><span>Organ centre</span></div>
+  <div class="lr"><div class="ld" style="background:var(--partner)"></div><span>Partner</span></div>
+  <div class="lr" style="margin-top:4px;border-top:1px solid var(--border);padding-top:4px">
+    <svg width="20" height="8"><line x1="0" y1="4" x2="20" y2="4" stroke="#0077cc" stroke-width="2"/></svg><span>OZ → Centre</span>
+  </div>
+  <div class="lr">
+    <svg width="20" height="8"><line x1="0" y1="4" x2="20" y2="4" stroke="#e05a2b" stroke-width="1.5" stroke-dasharray="3,3"/></svg><span>Centre → Partner</span>
+  </div>
 </div>
 
 <script>
-const API = {
-  clinics: "https://api.oncomap.de/api/direct/fulldb_clinics",
-  centers: "https://api.oncomap.de/api/direct/fulldb_centers",
-  oncos: "https://api.oncomap.de/api/direct/fulldb_oncos",
-  viszes: "https://api.oncomap.de/api/direct/fulldb_viszes",
-  uros: "https://api.oncomap.de/api/direct/fulldb_uros",
-  partners: "https://api.oncomap.de/api/direct/fulldb_partners",
-  oncos_centers: "https://api.oncomap.de/api/direct/fulldb_oncos_centers",
-  viszes_centers: "https://api.oncomap.de/api/direct/fulldb_viszes_centers",
-  uros_centers: "https://api.oncomap.de/api/direct/fulldb_uros_centers",
-  partners_centers: "https://api.oncomap.de/api/direct/fulldb_partners_centers"
+/* ═══ CONFIG ═══ */
+const LIVE={
+  centers:'https://api.oncomap.de/api/direct/fulldb_centers',
+  oncos:'https://api.oncomap.de/api/direct/fulldb_oncos',
+  viszes:'https://api.oncomap.de/api/direct/fulldb_viszes',
+  uros:'https://api.oncomap.de/api/direct/fulldb_uros',
+  partners:'https://api.oncomap.de/api/direct/fulldb_partners',
+  oncos_centers:'https://api.oncomap.de/api/direct/fulldb_oncos_centers',
+  viszes_centers:'https://api.oncomap.de/api/direct/fulldb_viszes_centers',
+  uros_centers:'https://api.oncomap.de/api/direct/fulldb_uros_centers',
+  partners_centers:'https://api.oncomap.de/api/direct/fulldb_partners_centers'
 };
+const SEL_KEY='dkg26_sel_v2';
+const WAVES=['—','Wave 1','Wave 2','Wave 3','Wave 4'];
+const STATUSES=['New','Contacted','Replied','Meeting','Not interested'];
 
-const STORAGE_KEY = 'kommunikationsplan2026_state_v6';
-const UNIT_STORAGE_KEY = 'kommunikationsplan2026_units_v6';
+/* ═══ MAP ═══ */
+const map=L.map('map',{zoomControl:false}).setView([51.2,10.4],6);
+L.control.zoom({position:'bottomright'}).addTo(map);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{maxZoom:19,attribution:'© OpenStreetMap · © CARTO'}).addTo(map);
+map.createPane('lp'); map.getPane('lp').style.zIndex=500;
+const LY={oz:L.layerGroup().addTo(map),center:L.layerGroup().addTo(map),partner:L.layerGroup().addTo(map),lines:L.layerGroup().addTo(map)};
 
-const map = L.map('map').setView([51.2, 10.4], 6);
-L.tileLayer('https://basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-  maxZoom: 19,
-  attribution: '&copy; OpenStreetMap-Mitwirkende &copy; CARTO'
-}).addTo(map);
-
-map.createPane('linesPane');
-map.getPane('linesPane').style.zIndex = 500;
-
-const ozLayer = L.layerGroup().addTo(map);
-const centerLayer = L.layerGroup().addTo(map);
-const partnerLayer = L.layerGroup().addTo(map);
-const linesLayer = L.layerGroup().addTo(map);
-
-const els = {
-  search: document.getElementById('search'),
-  organFilter: document.getElementById('organFilter'),
-  regionFilter: document.getElementById('regionFilter'),
-  reloadTop: document.getElementById('reloadTop'),
-  resetFiltersBtn: document.getElementById('resetFiltersBtn'),
-  clearFocusBtn: document.getElementById('clearFocusBtn'),
-  minimizeBtn: document.getElementById('minimizeBtn'),
-  apiStatus: document.getElementById('apiStatus'),
-  regionCounts: document.getElementById('regionCounts'),
-  regionDetailList: document.getElementById('regionDetailList'),
-  focusPanel: document.getElementById('focusPanel'),
-  selectionSummary: document.getElementById('selectionSummary'),
-  selectionList: document.getElementById('selectionList'),
-  ozTypeChips: document.getElementById('ozTypeChips'),
-  layerToggles: document.getElementById('layerToggles'),
-  clearAllSelectedBtn: document.getElementById('clearAllSelectedBtn'),
-  exportBtn: document.getElementById('exportBtn')
+/* ═══ APP STATE ═══ */
+const A={
+  oz:[],centers:[],partners:[],all:[],byId:new Map(),
+  ozToCenters:new Map(),centerToOz:new Map(),
+  ozToPartners:new Map(),centerToPartners:new Map(),partnerToOz:new Map(),
+  focusedOzId:null,   // set ONLY by clicking an OZ directly
+  highlightedId:null, // set when clicking a centre/partner
+  ozTypeFilter:'ALL',
+  showOZ:true,showCenters:true,showPartners:true,showUnassigned:true,
+  pipelineWaveFilter:'ALL',
+  stateLoaded:false,
+  stateSource:null // 'local' | 'github' | 'imported'
 };
+let curTab='explore';
 
-const app = {
-  all: [],
-  oz: [],
-  centers: [],
-  partners: [],
-  focusedOzId: null,
-  selectedEntityId: null,
-  ozTypeFilter: 'ALL',
-  showOZ: true,
-  showCenters: true,
-  showPartners: true,
-  showUnassignedCenters: true,
-  ozToCenters: new Map(),
-  ozToPartners: new Map(),
-  centerToPartners: new Map(),
-  centerToOz: new Map(),
-  partnerToOz: new Map(),
-  byId: new Map()
-};
+/* ═══ HELPERS ═══ */
+const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+const num=x=>{const v=Number(String(x??'').trim().replace(',','.'));return isFinite(v)?v:null};
+function parseCert(v){try{const o=typeof v==='string'?JSON.parse(v):v;const d=Object.values(o||{}).filter(x=>/^\d{4}-\d{2}-\d{2}$/.test(String(x)));return d.length?d.sort().slice(-1)[0]:''}catch{return ''}}
+const MC=r=>r.level==='CENTER'?'#0077cc':r.level==='PARTNER'?'#e05a2b':r.organ==='VISZ'?'#0d9e6e':r.organ==='URO'?'#d97706':'#5b4cf5';
 
-function esc(s){
-  return String(s ?? '').replace(/[&<>"']/g, m => ({
-    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
-  }[m]));
+// Cert expiry warning: flag if expires within 18 months
+function certWarn(certUntil){
+  if(!certUntil) return false;
+  const exp=new Date(certUntil), now=new Date();
+  const months=(exp-now)/(1000*60*60*24*30);
+  return months<=18;
 }
 
-function num(x){
-  if(x == null) return null;
-  const v = Number(String(x).trim().replace(',', '.'));
-  return Number.isFinite(v) ? v : null;
+function wTag(w){if(!w||w==='—')return '';const m={'Wave 1':'w1','Wave 2':'w2','Wave 3':'w3','Wave 4':'w4'};return`<span class="tag ${m[w]||''}">${esc(w)}</span>`}
+function sBadge(s){const m={'New':'s-new','Contacted':'s-contacted','Replied':'s-replied','Meeting':'s-meeting','Not interested':'s-notinterested'};return`<span class="sb ${m[s]||'s-new'}">${esc(s||'New')}</span>`}
+function typeTag(r){
+  if(r.level==='CENTER')return`<span class="tag center">Organ centre</span>`;
+  if(r.level==='PARTNER')return`<span class="tag partner">Partner</span>`;
+  return`<span class="tag ${r.organ==='VISZ'?'visz':r.organ==='URO'?'uro':'onko'}">${esc(r.organ)}</span>`;
 }
 
-function parseCertDate(v){
-  try{
-    const o = typeof v === 'string' ? JSON.parse(v) : v;
-    const dates = Object.values(o || {}).filter(x => /^\d{4}-\d{2}-\d{2}$/.test(String(x)));
-    return dates.length ? dates.sort().slice(-1)[0] : '';
-  }catch{
-    return '';
-  }
-}
-
-function markerColor(rec){
-  if(rec.level === 'CENTER') return '#64748b';
-  if(rec.level === 'PARTNER') return '#f97316';
-  if((rec.organ || '').toLowerCase().includes('visz')) return '#22c55e';
-  if((rec.organ || '').toLowerCase().includes('uro')) return '#f59e0b';
-  return '#8b5cf6';
-}
-
-function stageTag(stage){
-  return `<span class="tag k${stage || 1}">MD ${stage || 1}</span>`;
-}
-
-async function fetchJson(url){
-  const r = await fetch(url, { cache:'no-store', mode:'cors' });
-  if(!r.ok) throw new Error(`${r.status} ${r.statusText}`);
-  return await r.json();
-}
-
-function normalizeOZ(rows, organ){
-  return (rows || []).map((r, idx) => {
-    const lat = num(r.latitude), lon = num(r.longitude);
-    if(lat === null || lon === null) return null;
-    return {
-      id: `OZ:${organ}:${r.id || idx}`,
-      rawId: String(r.id || idx),
-      level:'OZ',
-      organ,
-      region:r.state || '',
-      name:r.inst1 || r.name || `OZ ${r.id || idx}`,
-      subtitle:r.inst2 || '',
-      city:r.loc || r.ort || '',
-      street:r.street || '',
-      zip:r.zip || '',
-      phone:r.phone || '',
-      email:r.email || r.mail || r.p_email || '',
-      website:r.url || '',
+/* ═══ NORMALISE ═══ */
+function normOZ(rows,organ){
+  return(rows||[]).map((r,i)=>{
+    const lat=num(r.latitude),lon=num(r.longitude);
+    if(lat===null||lon===null)return null;
+    return{id:`OZ:${organ}:${r.id||i}`,rawId:String(r.id||i),level:'OZ',organ,
+      region:r.state||'',name:r.inst1||r.name||`OZ ${r.id||i}`,subtitle:r.inst2||'',
+      city:r.loc||r.ort||'',street:r.street||'',zip:r.zip||'',phone:r.phone||'',
+      email:r.email||r.mail||r.p_email||'',website:r.url||'',
       contact:[r.p_title,r.p_fname,r.p_lname].filter(Boolean).join(' ').trim(),
-      regNr:r.reg_nr || '',
-      certUntil:parseCertDate(r.certificate_types),
-      latitude:lat,
-      longitude:lon,
-      mdStatus:'Neu',
-      mdStage:1,
-      owner:'',
-      note:''
-    };
+      regNr:r.reg_nr||'',certUntil:parseCert(r.certificate_types),
+      latitude:lat,longitude:lon,
+      wave:'—',outreachStatus:'New',owner:'',note:''};
   }).filter(Boolean);
 }
-
-function normalizeCenters(rows){
-  return (rows || []).map((r, idx) => {
-    const lat = num(r.latitude), lon = num(r.longitude);
-    if(lat === null || lon === null) return null;
-    return {
-      id:`CENTER:${r.id || idx}`,
-      rawId:String(r.id || idx),
-      level:'CENTER',
-      organ:r.organ || '',
-      region:r.state || '',
-      name:r.inst1 || r.name || `Organzentrum ${r.id || idx}`,
-      subtitle:r.organ || '',
-      city:r.loc || r.ort || '',
-      street:r.street || '',
-      zip:r.zip || '',
-      phone:r.phone || '',
-      email:r.email || r.mail || r.p_email || '',
-      website:r.url || '',
+function normCenters(rows){
+  return(rows||[]).map((r,i)=>{
+    const lat=num(r.latitude),lon=num(r.longitude);
+    if(lat===null||lon===null)return null;
+    return{id:`CENTER:${r.id||i}`,rawId:String(r.id||i),level:'CENTER',organ:r.organ||'',
+      region:r.state||'',name:r.inst1||r.name||`Centre ${r.id||i}`,subtitle:r.organ||'',
+      city:r.loc||r.ort||'',street:r.street||'',zip:r.zip||'',phone:r.phone||'',
+      email:r.email||r.mail||r.p_email||'',website:r.url||'',
       contact:[r.p_title,r.p_fname,r.p_lname].filter(Boolean).join(' ').trim(),
-      regNr:r.reg_nr || '',
-      certUntil:parseCertDate(r.certificate_types),
-      latitude:lat,
-      longitude:lon
-    };
+      regNr:r.reg_nr||'',certUntil:parseCert(r.certificate_types),latitude:lat,longitude:lon};
   }).filter(Boolean);
 }
-
-function normalizePartners(rows){
-  return (rows || []).map((r, idx) => {
-    const lat = num(r.latitude), lon = num(r.longitude);
-    if(lat === null || lon === null) return null;
-    return {
-      id:`PARTNER:${r.id || idx}`,
-      rawId:String(r.id || idx),
-      level:'PARTNER',
-      organ:'',
-      region:r.state || '',
-      name:r.inst1 || r.name || `Partner ${r.id || idx}`,
-      subtitle:'Partner',
-      city:r.loc || r.ort || '',
-      street:r.street || '',
-      zip:r.zip || '',
-      phone:r.phone || '',
-      email:r.email || r.mail || r.p_email || '',
-      website:r.url || '',
+function normPartners(rows){
+  return(rows||[]).map((r,i)=>{
+    const lat=num(r.latitude),lon=num(r.longitude);
+    if(lat===null||lon===null)return null;
+    return{id:`PARTNER:${r.id||i}`,rawId:String(r.id||i),level:'PARTNER',organ:'',
+      region:r.state||'',name:r.inst1||r.name||`Partner ${r.id||i}`,subtitle:'Partner',
+      city:r.loc||r.ort||'',street:r.street||'',zip:r.zip||'',phone:r.phone||'',
+      email:r.email||r.mail||r.p_email||'',website:r.url||'',
       contact:[r.p_title,r.p_fname,r.p_lname].filter(Boolean).join(' ').trim(),
-      latitude:lat,
-      longitude:lon
-    };
+      latitude:lat,longitude:lon};
   }).filter(Boolean);
 }
-
-function buildRelations(oncosCenters, viszesCenters, urosCenters, partnersCenters){
-  const ozToCenters = new Map();
-  const centerToPartners = new Map();
-  const ozToPartners = new Map();
-  const centerToOz = new Map();
-  const partnerToOz = new Map();
-
-  function addOzCenters(prefix, rows){
-    (rows || []).forEach(r => {
-      const ozId = `OZ:${prefix}:${String(r.n_id)}`;
-      const centerId = `CENTER:${String(r.c_id)}`;
-      if(!ozToCenters.has(ozId)) ozToCenters.set(ozId, new Set());
-      ozToCenters.get(ozId).add(centerId);
-      if(!centerToOz.has(centerId)) centerToOz.set(centerId, new Set());
-      centerToOz.get(centerId).add(ozId);
-    });
-  }
-
-  addOzCenters('ONKO', oncosCenters);
-  addOzCenters('VISZ', viszesCenters);
-  addOzCenters('URO', urosCenters);
-
-  (partnersCenters || []).forEach(r => {
-    const centerId = `CENTER:${String(r.c_id)}`;
-    const partnerId = `PARTNER:${String(r.p_id)}`;
-    if(!centerToPartners.has(centerId)) centerToPartners.set(centerId, new Set());
-    centerToPartners.get(centerId).add(partnerId);
-  });
-
-  ozToCenters.forEach((centerIds, ozId) => {
-    const pset = new Set();
-    centerIds.forEach(centerId => {
-      (centerToPartners.get(centerId) || new Set()).forEach(pid => {
-        pset.add(pid);
-        if(!partnerToOz.has(pid)) partnerToOz.set(pid, new Set());
-        partnerToOz.get(pid).add(ozId);
-      });
-    });
-    ozToPartners.set(ozId, pset);
-  });
-
-  app.ozToCenters = ozToCenters;
-  app.centerToPartners = centerToPartners;
-  app.ozToPartners = ozToPartners;
-  app.centerToOz = centerToOz;
-  app.partnerToOz = partnerToOz;
+function buildRel(oc,vc,uc,pc){
+  const ozC=new Map(),cOz=new Map(),cP=new Map(),ozP=new Map(),pOz=new Map();
+  function lk(pfx,rows){(rows||[]).forEach(r=>{const oz=`OZ:${pfx}:${String(r.n_id)}`,c=`CENTER:${String(r.c_id)}`;if(!ozC.has(oz))ozC.set(oz,new Set());ozC.get(oz).add(c);if(!cOz.has(c))cOz.set(c,new Set());cOz.get(c).add(oz)})}
+  lk('ONKO',oc);lk('VISZ',vc);lk('URO',uc);
+  (pc||[]).forEach(r=>{const c=`CENTER:${String(r.c_id)}`,p=`PARTNER:${String(r.p_id)}`;if(!cP.has(c))cP.set(c,new Set());cP.get(c).add(p)});
+  ozC.forEach((cs,oz)=>{const ps=new Set();cs.forEach(c=>{(cP.get(c)||new Set()).forEach(p=>{ps.add(p);if(!pOz.has(p))pOz.set(p,new Set());pOz.get(p).add(oz)})});ozP.set(oz,ps)});
+  Object.assign(A,{ozToCenters:ozC,centerToOz:cOz,ozToPartners:ozP,centerToPartners:cP,partnerToOz:pOz});
 }
 
-function saveState(){
-  const payload = {
-    records: app.oz.map(x => ({
-      id:x.id, mdStatus:x.mdStatus, mdStage:x.mdStage, owner:x.owner, note:x.note
-    }))
+/* ═══ STATE PERSISTENCE ═══ */
+function getStatePayload(){
+  return{
+    version:2,
+    exported:new Date().toISOString(),
+    oz:A.oz.filter(x=>x.wave!=='—'||x.outreachStatus!=='New'||x.owner||x.note)
+      .map(x=>({id:x.id,wave:x.wave,outreachStatus:x.outreachStatus,owner:x.owner,note:x.note}))
   };
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
 }
-
-function loadStateFromStorage(){
+function applyStatePayload(data){
+  if(!data?.oz) return;
+  const m=new Map(data.oz.map(r=>[r.id,r]));
+  A.oz.forEach(oz=>{const s=m.get(oz.id);if(s){oz.wave=s.wave||oz.wave;oz.outreachStatus=s.outreachStatus||oz.outreachStatus;oz.owner=s.owner||oz.owner;oz.note=s.note||oz.note}});
+}
+function saveLocal(){
+  localStorage.setItem('dkg26_state_v2',JSON.stringify(getStatePayload()));
+}
+function loadLocal(){
+  try{const d=JSON.parse(localStorage.getItem('dkg26_state_v2')||'null');if(d){applyStatePayload(d);A.stateSource='local';return true}}catch{}
+  return false;
+}
+async function loadGithubState(){
   try{
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if(!raw) return;
-    const saved = JSON.parse(raw);
-    const savedMap = new Map((saved.records || []).map(r => [r.id, r]));
-    app.oz.forEach(oz => {
-      const s = savedMap.get(oz.id);
-      if(s){
-        oz.mdStatus = s.mdStatus || oz.mdStatus;
-        oz.mdStage = s.mdStage || oz.mdStage;
-        oz.owner = s.owner || oz.owner;
-        oz.note = s.note || oz.note;
-      }
-    });
+    const r=await fetch('./data/state.json',{cache:'no-store'});
+    if(r.ok){const d=await r.json();applyStatePayload(d);A.stateSource='github';return true}
   }catch{}
+  return false;
 }
 
-function getSelectedUnits(){
-  return new Set(JSON.parse(localStorage.getItem(UNIT_STORAGE_KEY) || '[]'));
-}
+const getSel=()=>new Set(JSON.parse(localStorage.getItem(SEL_KEY)||'[]'));
+const saveSel=s=>localStorage.setItem(SEL_KEY,JSON.stringify([...s]));
 
-function saveSelectedUnits(set){
-  localStorage.setItem(UNIT_STORAGE_KEY, JSON.stringify([...set]));
-}
-
-function fillFilters(){
-  const organs = [...new Set(app.centers.map(x => x.organ).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'de'));
-  const regions = [...new Set(app.all.map(x => x.region).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'de'));
-  els.organFilter.innerHTML = '<option value="ALL">Alle Organzentren</option>' + organs.map(v => `<option value="${esc(v)}">${esc(v)}</option>`).join('');
-  els.regionFilter.innerHTML = '<option value="ALL">Alle Bundesländer</option>' + regions.map(v => `<option value="${esc(v)}">${esc(v)}</option>`).join('');
-  renderOzTypeChips();
-  renderLayerToggles();
-}
-
-function renderOzTypeChips(){
-  els.ozTypeChips?.querySelectorAll('[data-oz-type]').forEach(btn => {
-    const active = btn.dataset.ozType === app.ozTypeFilter;
-    btn.style.borderColor = active ? 'rgba(37,99,235,.45)' : '';
-    btn.style.background = active ? 'rgba(37,99,235,.10)' : '';
-    btn.style.color = active ? '#1d4ed8' : '';
-  });
-}
-
-function renderLayerToggles(){
-  els.layerToggles?.querySelectorAll('[data-layer]').forEach(btn => {
-    const layer = btn.dataset.layer;
-    const active = layer==='OZ' ? app.showOZ : layer==='CENTER' ? app.showCenters : layer==='PARTNER' ? app.showPartners : app.showUnassignedCenters;
-    btn.style.borderColor = active ? 'rgba(37,99,235,.45)' : '';
-    btn.style.background = active ? 'rgba(37,99,235,.10)' : '';
-    btn.style.color = active ? '#1d4ed8' : '';
-  });
-}
-
-function applyFilters(records){
-  const q = (els.search.value || '').trim().toLowerCase();
-  const organ = els.organFilter.value || 'ALL';
-  const region = els.regionFilter.value || 'ALL';
-  const ozType = app.ozTypeFilter || 'ALL';
-
-  return records.filter(x => {
-    if(x.level === 'OZ' && !app.showOZ) return false;
-
-    if(x.level === 'CENTER'){
-      const hasOZ = app.centerToOz.get(x.id) && app.centerToOz.get(x.id).size;
-      if(hasOZ && !app.showCenters) return false;
-      if(!hasOZ && !app.showUnassignedCenters) return false;
+/* ═══ FILTERS ═══ */
+function applyFilters(recs){
+  const q=(document.getElementById('search').value||'').trim().toLowerCase();
+  const org=document.getElementById('organFilter').value||'ALL';
+  const reg=document.getElementById('regionFilter').value||'ALL';
+  const ozt=A.ozTypeFilter;
+  return recs.filter(x=>{
+    if(x.level==='OZ'&&!A.showOZ)return false;
+    if(x.level==='PARTNER'&&!A.showPartners)return false;
+    if(x.level==='CENTER'){const h=A.centerToOz.get(x.id)?.size;if(h&&!A.showCenters)return false;if(!h&&!A.showUnassigned)return false}
+    if(ozt!=='ALL'){
+      if(x.level==='OZ'&&x.organ!==ozt)return false;
+      if(x.level==='CENTER'){const ps=A.centerToOz.get(x.id);if(ps?.size&&![...ps].some(id=>A.byId.get(id)?.organ===ozt))return false}
+      if(x.level==='PARTNER'){const ps=A.partnerToOz.get(x.id);if(ps?.size&&![...ps].some(id=>A.byId.get(id)?.organ===ozt))return false}
     }
-
-    if(x.level === 'PARTNER' && !app.showPartners) return false;
-
-    if(ozType !== 'ALL'){
-      if(x.level === 'OZ' && x.organ !== ozType) return false;
-      if(x.level === 'CENTER'){
-        const parentSet = app.centerToOz.get(x.id);
-        if(parentSet && parentSet.size){
-          const ok = [...parentSet].some(ozId => app.byId.get(ozId)?.organ === ozType);
-          if(!ok) return false;
-        }
-      }
-      if(x.level === 'PARTNER'){
-        const parentSet = app.partnerToOz.get(x.id);
-        if(parentSet && parentSet.size){
-          const ok = [...parentSet].some(ozId => app.byId.get(ozId)?.organ === ozType);
-          if(!ok) return false;
-        }
-      }
-    }
-
-    if(organ !== 'ALL'){
-      if(x.level === 'OZ') return false;
-      if(x.level === 'CENTER' && x.organ !== organ) return false;
-      if(x.level === 'PARTNER'){
-        const linkedCenterIds = [...app.centerToPartners.entries()]
-          .filter(([cid, pids]) => pids.has(x.id))
-          .map(([cid]) => cid);
-        const linkedCenters = linkedCenterIds.map(cid => app.byId.get(cid)).filter(Boolean);
-        if(!linkedCenters.some(c => c.organ === organ)) return false;
-      }
-    }
-
-    if(region !== 'ALL' && x.region !== region) return false;
-
-    if(q){
-      const hay = `${x.name} ${x.city} ${x.contact} ${x.subtitle} ${x.email || ''} ${x.website || ''}`.toLowerCase();
-      if(!hay.includes(q)) return false;
-    }
-
+    if(org!=='ALL'){if(x.level==='OZ')return false;if(x.level==='CENTER'&&x.organ!==org)return false;
+      if(x.level==='PARTNER'){const lk=[...A.centerToPartners.entries()].filter(([c,ps])=>ps.has(x.id)).map(([c])=>A.byId.get(c)).filter(Boolean);if(!lk.some(c=>c.organ===org))return false}}
+    if(reg!=='ALL'&&x.region!==reg)return false;
+    if(q){const h=`${x.name} ${x.city} ${x.contact} ${x.subtitle} ${x.email}`.toLowerCase();if(!h.includes(q))return false}
     return true;
   });
 }
+const getFiltered=()=>applyFilters(A.all);
 
-function getVisibleRecords(){
-  const filtered = applyFilters(app.all);
-  return filtered.filter(x => {
-    if(!app.focusedOzId) return true;
-    if(x.id === app.focusedOzId || x.id === app.selectedEntityId) return true;
-    if(x.level === 'CENTER') return (app.ozToCenters.get(app.focusedOzId) || new Set()).has(x.id);
-    if(x.level === 'PARTNER') return (app.ozToPartners.get(app.focusedOzId) || new Set()).has(x.id);
+/* ═══ MAP — IMPROVED LINE LOGIC ═══ */
+function renderMap(){
+  LY.oz.clearLayers();LY.center.clearLayers();LY.partner.clearLayers();LY.lines.clearLayers();
+  const zoom=map.getZoom(),fil=getFiltered(),sel=getSel();
+
+  // Only show full network when an OZ is deliberately focused
+  const vis=fil.filter(x=>{
+    if(!A.focusedOzId)return true;
+    if(x.id===A.focusedOzId)return true;
+    if(x.level==='CENTER')return A.ozToCenters.get(A.focusedOzId)?.has(x.id);
+    if(x.level==='PARTNER')return A.ozToPartners.get(A.focusedOzId)?.has(x.id);
     return false;
   });
-}
 
-function getScopedRecords(kind='ALL'){
-  return applyFilters(app.all).filter(x => kind === 'ALL' ? true : x.level === kind);
-}
+  vis.forEach(r=>{
+    if(r.level==='CENTER'&&zoom<=6&&!A.focusedOzId)return;
+    if(r.level==='PARTNER'&&zoom<=8&&!A.focusedOzId)return;
 
-function renderMarkers(){
-  ozLayer.clearLayers();
-  centerLayer.clearLayers();
-  partnerLayer.clearLayers();
-  linesLayer.clearLayers();
+    // Emphasis: ONLY the focused OZ gets the large ring
+    const isFocused = r.id===A.focusedOzId;
+    const isHighlighted = r.id===A.highlightedId; // centre/partner clicked
+    const isSel = sel.has(r.id);
 
-  const visible = getVisibleRecords();
-  const zoom = map.getZoom();
+    let radius = r.level==='OZ'?7:r.level==='CENTER'?5:4;
+    if(isFocused) radius=11;
+    else if(isHighlighted) radius=8;
 
-  visible.forEach(rec => {
-    if(rec.level === 'CENTER' && zoom <= 6 && !app.focusedOzId) return;
-    if(rec.level === 'PARTNER' && zoom <= 8 && !app.focusedOzId) return;
+    // Weight: only focusedOZ gets thick outer ring; selected gets slight weight boost; rest minimal
+    const weight = isFocused?3 : isHighlighted?2 : isSel?2 : 1.5;
+    const fillOpacity = isFocused?1 : isHighlighted?.9 : isSel?.85 : .75;
 
-    const focusedOz = rec.id === app.focusedOzId;
-    const selectedEntity = rec.id === app.selectedEntityId;
-    const radius = focusedOz ? 10 : selectedEntity ? 8 : rec.level === 'OZ' ? (zoom <= 6 ? 8 : 7) : rec.level === 'CENTER' ? 5 : 4;
+    // OZ dot colour: normal; focused gets white outer stroke to stand out on map
+    const strokeColor = isFocused?'#fff' : MC(r);
 
-    const marker = L.circleMarker([rec.latitude, rec.longitude], {
-      radius,
-      color: markerColor(rec),
-      weight: focusedOz || selectedEntity ? 4 : (rec.level === 'OZ' ? 3 : 2),
-      fillOpacity: focusedOz || selectedEntity ? 1 : 0.88,
-      fillColor: markerColor(rec)
-    }).bindPopup(`<b>${esc(rec.name)}</b><br><span style="color:#64748b">${esc(rec.city || '')}</span>`);
+    const m=L.circleMarker([r.latitude,r.longitude],{
+      radius,color:strokeColor,weight,fillOpacity,fillColor:MC(r)
+    });
+    m.bindTooltip(`<b>${r.name}</b><br><span style="color:#888">${r.city||''}</span>`,{direction:'top'});
 
-    marker.on('click', () => {
-      if(rec.level === 'OZ'){
-        app.focusedOzId = rec.id;
-        app.selectedEntityId = null;
+    m.on('click',e=>{
+      L.DomEvent.stopPropagation(e); // prevent map click from firing
+      if(r.level==='OZ'){
+        // Deliberately focusing: draw lines
+        A.focusedOzId=r.id;
+        A.highlightedId=null;
+        switchTab('focus');
       } else {
-        app.selectedEntityId = rec.id;
-        const parentSet = rec.level === 'CENTER' ? app.centerToOz.get(rec.id) : app.partnerToOz.get(rec.id);
-        app.focusedOzId = parentSet && parentSet.size ? [...parentSet][0] : null;
+        // Centre/partner: highlight in panel but do NOT trigger line drawing
+        A.highlightedId=r.id;
+        A.focusedOzId=null;
+        switchTab('focus');
       }
       renderAll();
     });
 
-    if(rec.level === 'OZ') ozLayer.addLayer(marker);
-    else if(rec.level === 'CENTER') centerLayer.addLayer(marker);
-    else partnerLayer.addLayer(marker);
+    if(r.level==='OZ')LY.oz.addLayer(m);
+    else if(r.level==='CENTER')LY.center.addLayer(m);
+    else LY.partner.addLayer(m);
   });
 
-  if(app.focusedOzId){
-    const oz = app.byId.get(app.focusedOzId);
+  // ── LINES: only when OZ is deliberately focused ──
+  if(A.focusedOzId){
+    const oz=A.byId.get(A.focusedOzId);
     if(oz){
-      const ozPos = [oz.latitude, oz.longitude];
-      (app.ozToCenters.get(oz.id) || new Set()).forEach(centerId => {
-        const c = app.byId.get(centerId);
-        if(!c) return;
-        L.polyline([ozPos, [c.latitude, c.longitude]], {
-          color:'#94a3b8', weight:2.2, opacity:0.6, pane:'linesPane'
-        }).addTo(linesLayer);
+      const centerIds=[...(A.ozToCenters.get(oz.id)||new Set())];
+      centerIds.forEach(cId=>{
+        const c=A.byId.get(cId);if(!c)return;
+        // Primary line: OZ → Centre — solid, visible
+        const line=L.polyline([[oz.latitude,oz.longitude],[c.latitude,c.longitude]],{
+          color:'#0077cc',weight:2,opacity:0,pane:'lp',dashArray:null
+        }).addTo(LY.lines);
+        // Fade in
+        setTimeout(()=>line.setStyle({opacity:.55}),50);
 
-        (app.centerToPartners.get(centerId) || new Set()).forEach(partnerId => {
-          const p = app.byId.get(partnerId);
-          if(!p) return;
-          L.polyline([[c.latitude, c.longitude],[p.latitude, p.longitude]], {
-            color:'#f97316', weight:1.6, opacity:0.45, pane:'linesPane'
-          }).addTo(linesLayer);
+        // Secondary lines: Centre → Partners — dashed, subtle
+        (A.centerToPartners.get(cId)||new Set()).forEach(pId=>{
+          const p=A.byId.get(pId);if(!p)return;
+          const pl=L.polyline([[c.latitude,c.longitude],[p.latitude,p.longitude]],{
+            color:'#e05a2b',weight:1.2,opacity:0,pane:'lp',dashArray:'4,5'
+          }).addTo(LY.lines);
+          setTimeout(()=>pl.setStyle({opacity:.35}),100);
         });
       });
     }
   }
 }
 
-function getPartnerDetails(rec){
-  if(!rec || rec.level !== 'PARTNER') return { parentOzs: [], linkedCenters: [] };
-  const parentSet = app.partnerToOz.get(rec.id);
-  const parentOzs = parentSet ? [...parentSet].map(id => app.byId.get(id)).filter(Boolean) : [];
-  const linkedCenters = [...app.centerToPartners.entries()]
-    .filter(([cid, pids]) => pids.has(rec.id))
-    .map(([cid]) => app.byId.get(cid))
-    .filter(Boolean);
-  return { parentOzs, linkedCenters };
+/* ═══ UI RENDERS ═══ */
+function fillFilters(){
+  const organs=[...new Set(A.centers.map(x=>x.organ).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'de'));
+  const regions=[...new Set(A.all.map(x=>x.region).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'de'));
+  document.getElementById('organFilter').innerHTML='<option value="ALL">All organs</option>'+organs.map(v=>`<option value="${esc(v)}">${esc(v)}</option>`).join('');
+  document.getElementById('regionFilter').innerHTML='<option value="ALL">All regions</option>'+regions.map(v=>`<option value="${esc(v)}">${esc(v)}</option>`).join('');
+}
+function renderStats(){
+  const f=getFiltered();
+  document.getElementById('statOZ').textContent=f.filter(x=>x.level==='OZ').length;
+  document.getElementById('statCenter').textContent=f.filter(x=>x.level==='CENTER').length;
+  document.getElementById('statPartner').textContent=f.filter(x=>x.level==='PARTNER').length;
 }
 
-function regionListCard(rec, selectedSet){
-  const selected = selectedSet.has(rec.id);
-  const partnerExtra = rec.level === 'PARTNER' ? getPartnerDetails(rec) : null;
-
-  return `<div class="item">
-    <div class="t"><span class="tag ${rec.level==='OZ'?'oz':(rec.level==='CENTER'?'center':'partner')}">${rec.level==='CENTER'?'Organzentrum':(rec.level==='PARTNER'?'Partner':'OZ')}</span>${esc(rec.name)}</div>
-    <div class="m">${esc(rec.subtitle || '')} · ${esc(rec.city || '')}</div>
-    <div class="m">Kontakt: ${esc(rec.contact || '—')}</div>
-    <div class="m">Email: ${rec.email ? `<a href="mailto:${esc(rec.email)}">${esc(rec.email)}</a>` : '—'}</div>
-    <div class="m">Telefon: ${esc(rec.phone || '—')}</div>
-    <div class="m">Website: ${rec.website ? `<a href="${esc(rec.website)}" target="_blank" rel="noreferrer">${esc(rec.website)}</a>` : '—'}</div>
-    ${partnerExtra ? `${partnerExtra.parentOzs.length ? `<div class="m">Arbeitet mit OZs: ${esc(partnerExtra.parentOzs.map(x => x.name).join(' · '))}</div>` : `<div class="m">Keine OZ-Zuordnung</div>`}${partnerExtra.linkedCenters.length ? `<div class="m">Verknüpfte Organzentren: ${esc(partnerExtra.linkedCenters.map(x => x.name).join(' · '))}</div>` : ''}` : ''}
-    <div class="mini-actions">
-      <button class="mini-btn" data-region-add="${esc(rec.id)}">${selected ? 'In Auswahl' : 'Zur Auswahl'}</button>
-      <button class="mini-btn" data-region-open="${esc(rec.id)}">Details</button>
+function itemCard(r,sel,opts={}){
+  const isSel=sel.has(r.id),isFoc=r.id===A.focusedOzId,isHigh=r.id===A.highlightedId;
+  const warn=r.level==='OZ'&&certWarn(r.certUntil);
+  return`<div class="item${isFoc?' focused':isHigh?' highlighted':''}">
+    <div class="itags">${typeTag(r)}${r.level==='OZ'?wTag(r.wave):''}${r.level==='OZ'?sBadge(r.outreachStatus):''}</div>
+    <div class="iname">${esc(r.name)}</div>
+    <div class="imeta">${esc(r.city||'')}${r.subtitle&&r.subtitle!==r.organ?` · ${esc(r.subtitle)}`:''}${r.contact?`<br>${esc(r.contact)}`:''}${r.email?`<br><a href="mailto:${esc(r.email)}">${esc(r.email)}</a>`:''}${r.phone?`<br>${esc(r.phone)}`:''}${r.certUntil?`<br>Cert. until: <strong>${esc(r.certUntil)}</strong>`:''}</div>
+    ${warn?`<div class="warn-cert">⚠️ Cert expires soon — high priority</div>`:''}
+    <div class="iactions">
+      <button class="mb${isSel?' sel':''}" data-toggle="${esc(r.id)}">${isSel?'✓ Selected':'+ Outreach'}</button>
+      ${r.level==='OZ'?`<button class="mb" data-focus="${esc(r.id)}">Focus OZ</button>`:''}
+      ${r.level!=='OZ'?`<button class="mb" data-focusp="${esc(r.id)}">Highlight</button>`:''}
+      ${opts.showRemove?`<button class="mb d" data-remove="${esc(r.id)}">Remove</button>`:''}
     </div>
   </div>`;
 }
 
-function bindRegionCountActions(){
-  els.regionCounts.querySelectorAll('[data-region-chip]').forEach(el => el.addEventListener('click', e => {
-    const kind = e.currentTarget.dataset.regionChip;
-    const scoped = getScopedRecords(kind === 'ALL' ? 'ALL' : kind);
-    const selected = getSelectedUnits();
-    els.regionDetailList.style.display = 'flex';
-
-    const region = els.regionFilter.value || 'ALL';
-    const organ = els.organFilter.value || 'ALL';
-    const query = (els.search.value || '').trim();
-    const label = kind === 'ALL' ? 'Alle hinzufügen' : kind === 'OZ' ? 'Alle OZ hinzufügen' : kind === 'CENTER' ? 'Alle Organzentren hinzufügen' : 'Alle Partner hinzufügen';
-
-    els.regionDetailList.innerHTML =
-      `<div class="item">
-        <div class="t">Listenaktion</div>
-        <div class="m">Aktuelle Filter: ${region === 'ALL' ? 'Alle Bundesländer' : esc(region)}${organ !== 'ALL' ? ' · ' + esc(organ) : ''}${query ? ' · Suche: ' + esc(query) : ''}</div>
-        <div class="mini-actions">
-          <button class="mini-btn" id="addAllFromRegionListBtn">${label}</button>
-        </div>
-      </div>` +
-      (scoped.length ? scoped.map(x => regionListCard(x, selected)).join('') : '<div class="empty">Keine Einträge in dieser kombinierten Ansicht.</div>');
-
-    document.getElementById('addAllFromRegionListBtn')?.addEventListener('click', () => {
-      const set = getSelectedUnits();
-      scoped.forEach(x => set.add(x.id));
-      saveSelectedUnits(set);
-      renderOverview();
-      renderSelectionList();
-      if(app.focusedOzId || app.selectedEntityId) renderFocusPanel();
-    });
-
-    els.regionDetailList.querySelectorAll('[data-region-add]').forEach(btn => btn.addEventListener('click', ev => {
-      const id = ev.currentTarget.dataset.regionAdd;
-      const set = getSelectedUnits();
-      if(set.has(id)) set.delete(id); else set.add(id);
-      saveSelectedUnits(set);
-      renderOverview();
-      renderSelectionList();
-      if(app.focusedOzId || app.selectedEntityId) renderFocusPanel();
-    }));
-
-    els.regionDetailList.querySelectorAll('[data-region-open]').forEach(btn => btn.addEventListener('click', ev => {
-      const id = ev.currentTarget.dataset.regionOpen;
-      const rec = app.byId.get(id);
-      if(!rec) return;
-      if(rec.level === 'OZ'){
-        app.focusedOzId = rec.id;
-        app.selectedEntityId = null;
-      } else {
-        app.selectedEntityId = rec.id;
-        const parentSet = rec.level === 'CENTER' ? app.centerToOz.get(rec.id) : app.partnerToOz.get(rec.id);
-        app.focusedOzId = parentSet && parentSet.size ? [...parentSet][0] : null;
-      }
-      renderAll();
-    }));
-  }));
-}
-
-function renderOverview(){
-  const region = els.regionFilter.value || 'ALL';
-  const organ = els.organFilter.value || 'ALL';
-  const query = (els.search.value || '').trim();
-  const scoped = getScopedRecords('ALL');
-
-  const ozCount = scoped.filter(x => x.level === 'OZ').length;
-  const centerCount = scoped.filter(x => x.level === 'CENTER').length;
-  const partnerCount = scoped.filter(x => x.level === 'PARTNER').length;
-
-  els.regionCounts.innerHTML = `<button class="chip" data-region-chip="ALL">${region === 'ALL' ? 'Alle Bundesländer' : region}</button>${organ !== 'ALL' ? `<button class="chip" data-region-chip="ALL">${esc(organ)}</button>` : ''}${query ? `<button class="chip" data-region-chip="ALL">Suche: ${esc(query)}</button>` : ''}<button class="chip" data-region-chip="OZ">${ozCount} OZ</button><button class="chip" data-region-chip="CENTER">${centerCount} Organzentren</button><button class="chip" data-region-chip="PARTNER">${partnerCount} Partner</button>`;
-
-  bindRegionCountActions();
-}
-
-function marketPositionText(oz, centers, partners){
-  return `Zu diesem OZ gehören ${centers.length} Organzentren und ${partners.length} Partner. So könnt ihr das OZ als Einheit auswählen oder gezielt einzelne kontaktierbare Einheiten für den HubSpot-Export markieren.`;
-}
-
-function unitCard(rec, selectedSet){
-  const selected = selectedSet.has(rec.id);
-  return `<div class="item">
-    <div class="t"><span class="tag ${rec.level==='OZ'?'oz':(rec.level==='CENTER'?'center':'partner')}">${rec.level==='CENTER'?'Organzentrum':(rec.level==='PARTNER'?'Partner':'OZ')}</span>${esc(rec.name)}</div>
-    <div class="m">${esc(rec.subtitle || '')} · ${esc(rec.city || '')}</div>
-    <div class="m">Kontakt: ${esc(rec.contact || '—')}</div>
-    <div class="m">Email: ${rec.email ? `<a href="mailto:${esc(rec.email)}">${esc(rec.email)}</a>` : '—'}</div>
-    <div class="m">Telefon: ${esc(rec.phone || '—')}</div>
-    <div class="m">Website: ${rec.website ? `<a href="${esc(rec.website)}" target="_blank">${esc(rec.website)}</a>` : '—'}</div>
-    <div class="mini-actions"><button class="mini-btn" data-unit="${esc(rec.id)}">${selected ? 'In Auswahl' : 'Zur Auswahl'}</button></div>
-  </div>`;
+function renderExploreList(){
+  const el=document.getElementById('exploreList'),recs=getFiltered(),sel=getSel();
+  if(!recs.length){el.innerHTML='<div class="empty">No results. Adjust your filters.</div>';return}
+  el.innerHTML=recs.slice(0,80).map(r=>itemCard(r,sel)).join('')
+    +(recs.length>80?`<div class="empty">…and ${recs.length-80} more. Use filters to narrow down.</div>`:'');
+  bindActions(el);
 }
 
 function renderFocusPanel(){
-  const selectedUnits = getSelectedUnits();
-  const selectedEntity = app.selectedEntityId ? app.byId.get(app.selectedEntityId) : null;
+  const panel=document.getElementById('focusPanel'),sel=getSel();
 
-  if(selectedEntity && selectedEntity.level !== 'OZ'){
-    const parentSet = selectedEntity.level === 'CENTER' ? app.centerToOz.get(selectedEntity.id) : app.partnerToOz.get(selectedEntity.id);
-    const parentOzs = parentSet ? [...parentSet].map(id => app.byId.get(id)).filter(Boolean) : [];
-    const linkedCenters = selectedEntity.level === 'PARTNER'
-      ? [...app.centerToPartners.entries()].filter(([cid, pids]) => pids.has(selectedEntity.id)).map(([cid]) => app.byId.get(cid)).filter(Boolean)
-      : [];
-
-    els.focusPanel.innerHTML = `<div class="item">
-      <div class="t"><span class="tag ${selectedEntity.level==='CENTER'?'center':'partner'}">${selectedEntity.level==='CENTER'?'Organzentrum':'Partner'}</span>${esc(selectedEntity.name)}</div>
-      <div class="m">${esc(selectedEntity.subtitle || '')} · ${esc(selectedEntity.city || '')}</div>
-      <div class="m">Kontakt: ${esc(selectedEntity.contact || '—')}</div>
-      <div class="m">Email: ${selectedEntity.email ? `<a href="mailto:${esc(selectedEntity.email)}">${esc(selectedEntity.email)}</a>` : '—'}</div>
-      <div class="m">Telefon: ${esc(selectedEntity.phone || '—')}</div>
-      <div class="m">Website: ${selectedEntity.website ? `<a href="${esc(selectedEntity.website)}" target="_blank" rel="noreferrer">${esc(selectedEntity.website)}</a>` : '—'}</div>
-      <div class="mini-actions"><button class="mini-btn" data-unit="${esc(selectedEntity.id)}">${selectedUnits.has(selectedEntity.id)?'In Auswahl':'Zur Auswahl'}</button></div>
-    </div>
-    <div class="item">
-      <div class="t">Zuordnung</div>
-      ${parentOzs.length ? `<div class="m">Zugeordnet zu: ${esc(parentOzs.map(x => x.name).join(' · '))}</div>` : `<div class="m">Keine OZ-Zuordnung</div>`}
-      ${linkedCenters.length ? `<div class="m">Verknüpfte Organzentren: ${esc(linkedCenters.map(x => x.name).join(' · '))}</div>` : ''}
+  // Case 1: a centre or partner was highlighted (not OZ focused)
+  if(A.highlightedId&&!A.focusedOzId){
+    const r=A.byId.get(A.highlightedId);
+    if(!r){panel.innerHTML='<div class="empty">Not found.</div>';return}
+    const parentOzs=r.level==='CENTER'
+      ?[...(A.centerToOz.get(r.id)||new Set())].map(id=>A.byId.get(id)).filter(Boolean)
+      :[...(A.partnerToOz.get(r.id)||new Set())].map(id=>A.byId.get(id)).filter(Boolean);
+    const isSel=sel.has(r.id);
+    panel.innerHTML=`<div class="card">
+      <div class="ch"><span class="ct">${r.level==='CENTER'?'Organ centre':'Partner'}</span>
+        <button id="closeFocus" class="mb">✕</button>
+      </div>
+      <div class="cb">
+        <div class="itags">${typeTag(r)}</div>
+        <div class="iname" style="font-size:14px;font-family:var(--serif);font-style:italic">${esc(r.name)}</div>
+        <div class="imeta">${esc(r.city||'')}${r.contact?`<br>${esc(r.contact)}`:''}${r.email?`<br><a href="mailto:${esc(r.email)}">${esc(r.email)}</a>`:''}${r.phone?`<br>${esc(r.phone)}`:''}${r.certUntil?`<br>Cert. until: <strong>${esc(r.certUntil)}</strong>`:''}</div>
+        ${parentOzs.length?`<div class="imeta" style="margin-top:6px"><strong>Parent OZ${parentOzs.length>1?'s':''}:</strong><br>${parentOzs.map(o=>`<button class="mb" style="margin-top:3px" data-focus="${esc(o.id)}">${esc(o.name)}</button>`).join(' ')}</div>`:'<div class="imeta" style="margin-top:6px">No parent OZ assigned.</div>'}
+        <div class="iactions">
+          <button class="mb${isSel?' sel':''}" data-toggle="${esc(r.id)}">${isSel?'✓ Selected':'+ Outreach'}</button>
+        </div>
+      </div>
     </div>`;
-
-    els.focusPanel.querySelectorAll('[data-unit]').forEach(el => el.addEventListener('click', e => {
-      const id = e.currentTarget.dataset.unit;
-      const set = getSelectedUnits();
-      if(set.has(id)) set.delete(id); else set.add(id);
-      saveSelectedUnits(set);
-      renderFocusPanel();
-      renderSelectionList();
-    }));
+    document.getElementById('closeFocus')?.addEventListener('click',()=>{A.highlightedId=null;renderAll()});
+    bindActions(panel);
     return;
   }
 
-  const oz = app.byId.get(app.focusedOzId);
-  if(!oz){
-    els.focusPanel.innerHTML = '<div class="empty">Klicke auf ein OZ. Dann siehst du die zugehörigen Organzentren und Partner und kannst alles einzeln oder gesammelt zur Auswahl hinzufügen.</div>';
+  // Case 2: no OZ focused
+  if(!A.focusedOzId){
+    panel.innerHTML='<div class="empty">Click an OZ on the map to explore its network.<br><br>Lines show OZ→centre (solid blue) and centre→partner (dashed orange).<br><br>Click anywhere on the map to clear focus.</div>';
     return;
   }
 
-  const centers = [...(app.ozToCenters.get(oz.id) || new Set())].map(id => app.byId.get(id)).filter(Boolean);
-  const partners = [...(app.ozToPartners.get(oz.id) || new Set())].map(id => app.byId.get(id)).filter(Boolean);
+  // Case 3: OZ deliberately focused
+  const oz=A.byId.get(A.focusedOzId);
+  if(!oz){panel.innerHTML='<div class="empty">OZ not found.</div>';return}
+  const centers=[...(A.ozToCenters.get(oz.id)||new Set())].map(id=>A.byId.get(id)).filter(Boolean);
+  const partners=[...(A.ozToPartners.get(oz.id)||new Set())].map(id=>A.byId.get(id)).filter(Boolean);
+  const isSel=sel.has(oz.id);
+  const warn=certWarn(oz.certUntil);
 
-  els.focusPanel.innerHTML = `<div class="item">
-    <div class="t"><span class="tag oz">${esc(oz.organ)}</span>${stageTag(oz.mdStage)} ${esc(oz.name)}</div>
-    <div class="m">${esc(oz.subtitle || '')} · ${esc(oz.city || '')}</div>
-    <div class="m">Kontakt: ${esc(oz.contact || '—')} · Telefon: ${esc(oz.phone || '—')}</div>
-    <div class="m">Email: ${oz.email ? `<a href="mailto:${esc(oz.email)}">${esc(oz.email)}</a>` : '—'}</div>
-    <div class="m">Website: ${oz.website ? `<a href="${esc(oz.website)}" target="_blank" rel="noreferrer">${esc(oz.website)}</a>` : '—'}</div>
-    <div class="m" style="margin-top:8px;"><b>Strategie:</b> ${esc(marketPositionText(oz, centers, partners))}</div>
-    <div class="row" style="margin-top:8px;">
-      <select id="ozStatusSelect">${['Neu','In Prüfung','In Kontakt','In Entwicklung','Priorisiert'].map(v => `<option value="${v}" ${oz.mdStatus===v?'selected':''}>${v}</option>`).join('')}</select>
-      <select id="ozStageSelect">${[1,2,3,4,5].map(v => `<option value="${v}" ${Number(oz.mdStage)===v?'selected':''}>MD ${v}</option>`).join('')}</select>
-    </div>
-    <textarea id="ozNoteInput" style="margin-top:8px;">${esc(oz.note || '')}</textarea>
-    <div class="mini-actions">
-      <button id="saveOzBtn" class="mini-btn">OZ speichern</button>
-      <button class="mini-btn" data-unit="${esc(oz.id)}">${selectedUnits.has(oz.id)?'OZ in Auswahl':'OZ zur Auswahl'}</button>
-      <button id="selectAllRelatedBtn" class="mini-btn">Alle auswählen</button>
+  panel.innerHTML=`
+  <div class="card">
+    <div class="ch"><span class="ct">Focused OZ</span><button id="closeFocus" class="mb">✕ Clear</button></div>
+    <div class="cb">
+      <div class="itags">${typeTag(oz)} ${wTag(oz.wave)} ${sBadge(oz.outreachStatus)}</div>
+      <div class="iname" style="font-size:14px;font-family:var(--serif);font-style:italic">${esc(oz.name)}</div>
+      <div class="imeta">${esc(oz.city||'')}${oz.subtitle?` · ${esc(oz.subtitle)}`:''}${oz.contact?`<br>${esc(oz.contact)}`:''}${oz.email?`<br><a href="mailto:${esc(oz.email)}">${esc(oz.email)}</a>`:''}${oz.phone?`<br>${esc(oz.phone)}`:''}${oz.regNr?`<br>DKG Reg.: <strong>${esc(oz.regNr)}</strong>`:''}${oz.certUntil?`<br>Cert. until: <strong>${esc(oz.certUntil)}</strong>`:''}</div>
+      ${warn?`<div class="warn-cert">⚠️ Certificate expires soon — high priority for Wave 1</div>`:''}
+      <div class="stat-row" style="margin-top:4px">
+        <div class="stat"><div class="sv">${centers.length}</div><div class="sl">Centres</div></div>
+        <div class="stat"><div class="sv">${partners.length}</div><div class="sl">Partners</div></div>
+      </div>
+      <div class="r2" style="margin-top:4px">
+        <select id="ozWave">${WAVES.map(v=>`<option value="${v}"${oz.wave===v?' selected':''}>${v}</option>`).join('')}</select>
+        <select id="ozStatus">${STATUSES.map(v=>`<option value="${v}"${oz.outreachStatus===v?' selected':''}>${v}</option>`).join('')}</select>
+      </div>
+      <input type="text" id="ozOwner" placeholder="Owner…" value="${esc(oz.owner||'')}"/>
+      <textarea id="ozNote" placeholder="Note…">${esc(oz.note||'')}</textarea>
+      <div class="iactions">
+        <button id="saveOzBtn" class="mb p">Save</button>
+        <button class="mb${isSel?' sel':''}" data-toggle="${esc(oz.id)}">${isSel?'✓ Selected':'+ Outreach'}</button>
+        <button id="selAllRel" class="mb">Select all (${centers.length+partners.length+1})</button>
+      </div>
     </div>
   </div>
-  <div class="item">
-    <div class="t">Zugehörige Einheiten</div>
-    <div class="m">${centers.length} Organzentren · ${partners.length} Partner</div>
-  </div>
-  <div class="list">
-    ${centers.length ? centers.map(x => unitCard(x, selectedUnits)).join('') : '<div class="empty">Keine zugeordneten Organzentren.</div>'}
-    ${partners.length ? partners.map(x => unitCard(x, selectedUnits)).join('') : '<div class="empty">Keine zugeordneten Partner.</div>'}
-  </div>`;
+  ${centers.length?`<div class="card"><div class="ch"><span class="ct">Organ centres (${centers.length})</span></div><div style="padding:8px;display:flex;flex-direction:column;gap:4px">${centers.map(r=>itemCard(r,sel)).join('')}</div></div>`:''}
+  ${partners.length?`<div class="card"><div class="ch"><span class="ct">Partners (${partners.length})</span></div><div style="padding:8px;display:flex;flex-direction:column;gap:4px">${partners.map(r=>itemCard(r,sel)).join('')}</div></div>`:''}`;
 
-  document.getElementById('saveOzBtn')?.addEventListener('click', () => {
-    oz.mdStatus = document.getElementById('ozStatusSelect').value;
-    oz.mdStage = Number(document.getElementById('ozStageSelect').value);
-    oz.note = document.getElementById('ozNoteInput').value.trim();
-    saveState();
-    renderAll();
+  document.getElementById('closeFocus')?.addEventListener('click',()=>{A.focusedOzId=null;renderAll()});
+  document.getElementById('saveOzBtn')?.addEventListener('click',()=>{
+    oz.wave=document.getElementById('ozWave').value;
+    oz.outreachStatus=document.getElementById('ozStatus').value;
+    oz.owner=document.getElementById('ozOwner').value.trim();
+    oz.note=document.getElementById('ozNote').value.trim();
+    saveLocal();renderAll();
   });
-
-  document.getElementById('selectAllRelatedBtn')?.addEventListener('click', () => {
-    const set = getSelectedUnits();
-    set.add(oz.id);
-    centers.forEach(x => set.add(x.id));
-    partners.forEach(x => set.add(x.id));
-    saveSelectedUnits(set);
-    renderAll();
+  document.getElementById('selAllRel')?.addEventListener('click',()=>{
+    const s=getSel();s.add(oz.id);centers.forEach(x=>s.add(x.id));partners.forEach(x=>s.add(x.id));
+    saveSel(s);renderAll();switchTab('outreach');
   });
-
-  els.focusPanel.querySelectorAll('[data-unit]').forEach(el => el.addEventListener('click', e => {
-    const id = e.currentTarget.dataset.unit;
-    const set = getSelectedUnits();
-    if(set.has(id)) set.delete(id); else set.add(id);
-    saveSelectedUnits(set);
-    renderFocusPanel();
-    renderSelectionList();
-  }));
+  bindActions(panel);
 }
 
-function renderSelectionList(){
-  const selected = [...getSelectedUnits()].map(id => app.byId.get(id)).filter(Boolean);
-  const ozCount = selected.filter(x => x.level === 'OZ').length;
-  const centerCount = selected.filter(x => x.level === 'CENTER').length;
-  const partnerCount = selected.filter(x => x.level === 'PARTNER').length;
+function renderOutreach(){
+  const sel=[...getSel()].map(id=>A.byId.get(id)).filter(Boolean);
+  document.getElementById('selBadge').textContent=sel.length;
+  const oz=sel.filter(x=>x.level==='OZ').length,ce=sel.filter(x=>x.level==='CENTER').length,pa=sel.filter(x=>x.level==='PARTNER').length;
+  document.getElementById('outreachSummary').innerHTML=
+    `<span class="chip${sel.length?' on':''}">${sel.length} total</span><span class="chip">${oz} OZ</span><span class="chip">${ce} centres</span><span class="chip">${pa} partners</span>`;
+  const el=document.getElementById('outreachList');
+  if(!sel.length){el.innerHTML='<div class="empty">No accounts selected yet.<br>Use Explore or Focus to build your selection.</div>';return}
+  el.innerHTML=sel.map(r=>itemCard(r,getSel(),{showRemove:true})).join('');
+  bindActions(el);
+}
 
-  els.selectionSummary.innerHTML = `<span class="chip">${selected.length} ausgewählt</span><span class="chip">${ozCount} OZ</span><span class="chip">${centerCount} Organzentren</span><span class="chip">${partnerCount} Partner</span>`;
+function renderPipeline(){
+  const WMAP={'Wave 1':'w1','Wave 2':'w2','Wave 3':'w3','Wave 4':'w4'};
+  const wcols={'Wave 1':'var(--w1)','Wave 2':'var(--w2)','Wave 3':'var(--w3)','Wave 4':'var(--w4)'};
+  const waves=['Wave 1','Wave 2','Wave 3','Wave 4'];
+  const wf=A.pipelineWaveFilter;
 
-  if(!selected.length){
-    els.selectionList.innerHTML = '<div class="empty">Noch keine Auswahl aufgebaut.</div>';
-    return;
-  }
+  // Build counts + status breakdown per wave
+  const waveCounts={};
+  waves.forEach(w=>{waveCounts[w]={total:0,New:0,Contacted:0,Replied:0,Meeting:0,'Not interested':0}});
+  A.oz.forEach(oz=>{if(waveCounts[oz.wave]){waveCounts[oz.wave].total++;waveCounts[oz.wave][oz.outreachStatus]=(waveCounts[oz.wave][oz.outreachStatus]||0)+1}});
 
-  els.selectionList.innerHTML = selected.map(rec => `<div class="item">
-    <div class="t"><span class="tag ${rec.level==='OZ'?'oz':(rec.level==='CENTER'?'center':'partner')}">${rec.level==='CENTER'?'Organzentrum':(rec.level==='PARTNER'?'Partner':'OZ')}</span>${esc(rec.name)}</div>
-    <div class="m">${esc(rec.city || '')}</div>
-    <div class="mini-actions"><button class="mini-btn" data-remove="${esc(rec.id)}">Entfernen</button></div>
+  document.getElementById('waveBoard').innerHTML=waves.map(w=>{
+    const c=waveCounts[w];
+    const isActive=wf===w;
+    const statusLine=[['Contacted',c.Contacted],['Replied',c.Replied],['Meeting',c.Meeting]].filter(([,n])=>n>0).map(([s,n])=>`${n} ${s}`).join(' · ')||'';
+    return`<div class="wc${isActive?' wactive':''}" style="color:${wcols[w]}" data-wset="${esc(w)}">
+      <div class="wc-label">${w}</div>
+      <div class="wc-num">${c.total}</div>
+      ${statusLine?`<div class="wc-stats">${statusLine}</div>`:''}
+    </div>`;
+  }).join('');
+
+  // Update wave filter chips active state
+  document.querySelectorAll('#waveFilterBar .wfchip').forEach(c=>{
+    c.classList.toggle('on',c.dataset.wf===wf);
+    if(c.dataset.wf!=='ALL'){const w=c.dataset.wf;c.style.background=wf===w?`rgba(${w==='Wave 1'?'91,76,245':w==='Wave 2'?'13,158,110':w==='Wave 3'?'217,119,6':'224,90,43'},.1)`:''}
+  });
+
+  // Filter OZ list
+  let active=A.oz.filter(oz=>oz.wave!=='—'||oz.outreachStatus!=='New'||oz.note||oz.owner);
+  if(wf!=='ALL') active=active.filter(oz=>oz.wave===wf);
+  active.sort((a,b)=>{const wi=waves.indexOf(a.wave)-waves.indexOf(b.wave);return wi||STATUSES.indexOf(b.outreachStatus)-STATUSES.indexOf(a.outreachStatus)});
+
+  const sel=getSel();
+  const el=document.getElementById('pipelineList');
+  if(!active.length){el.innerHTML=`<div class="empty">${wf==='ALL'?'No OZs assigned yet. Focus an OZ and assign it a wave.':'No OZs in '+wf+' yet.'}</div>`;return}
+  el.innerHTML=active.map(oz=>`<div class="item">
+    <div class="itags">${typeTag(oz)} ${wTag(oz.wave)} ${sBadge(oz.outreachStatus)}${certWarn(oz.certUntil)?'<span style="font-size:10px;color:var(--warn);font-weight:700">⚠️</span>':''}</div>
+    <div class="iname">${esc(oz.name)}</div>
+    <div class="imeta">${esc(oz.city||'')}${oz.owner?` · <strong>${esc(oz.owner)}</strong>`:''}</div>
+    ${oz.note?`<div class="imeta" style="font-style:italic;margin-top:2px">${esc(oz.note)}</div>`:''}
+    <div class="iactions">
+      <button class="mb" data-focus="${esc(oz.id)}">Focus</button>
+      <button class="mb${sel.has(oz.id)?' sel':''}" data-toggle="${esc(oz.id)}">${sel.has(oz.id)?'✓ Selected':'+ Outreach'}</button>
+    </div>
   </div>`).join('');
 
-  els.selectionList.querySelectorAll('[data-remove]').forEach(el => el.addEventListener('click', e => {
-    const set = getSelectedUnits();
-    set.delete(e.currentTarget.dataset.remove);
-    saveSelectedUnits(set);
-    renderSelectionList();
-    renderFocusPanel();
+  // Click on wave board column to filter
+  document.querySelectorAll('#waveBoard .wc').forEach(col=>col.addEventListener('click',e=>{
+    const w=e.currentTarget.dataset.wset;
+    A.pipelineWaveFilter=A.pipelineWaveFilter===w?'ALL':w;
+    renderPipeline();
   }));
+  bindActions(el);
 }
 
-function exportCsv(){
-  const selectedUnits = getSelectedUnits();
-  const rows = [...selectedUnits].map(id => app.byId.get(id)).filter(Boolean);
-  if(!rows.length){
-    alert('Es gibt noch keine ausgewählten Datensätze.');
-    return;
-  }
-
-  const out = rows.map(x => ({
-    company: x.name,
-    email: x.email || '',
-    phone: x.phone,
-    website: x.website,
-    address: x.street,
-    zip: x.zip,
-    city: x.city,
-    state: x.region,
-    country: 'Deutschland',
-    md_level: x.level,
-    md_organ: x.organ,
-    md_contact_person: x.contact,
-    md_registration_number: x.regNr || '',
-    md_certificate_until: x.certUntil || '',
-    md_status: x.mdStatus || '',
-    md_stage_1_5: x.mdStage || '',
-    md_note: x.note || ''
-  }));
-
-  const headers = Object.keys(out[0]);
-  const csv = [headers.join(',')]
-    .concat(out.map(row => headers.map(h => csvEscape(row[h])).join(',')))
-    .join('\n');
-
-  downloadFile('kommunikationsplan_2026.csv', csv, 'text/csv;charset=utf-8');
-}
-
-function csvEscape(v){
-  const s = String(v ?? '');
-  return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
-}
-
-function downloadFile(name, content, type){
-  const blob = new Blob([content], {type});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = name;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  URL.revokeObjectURL(url);
+function renderSync(){
+  const payload=getStatePayload();
+  const assigned=payload.oz.length;
+  const waves={};payload.oz.forEach(o=>{waves[o.wave]=(waves[o.wave]||0)+1});
+  const src=A.stateSource==='github'?'☁ Loaded from GitHub (shared state)'
+    :A.stateSource==='imported'?'📁 Loaded from imported file'
+    :A.stateSource==='local'?'💾 Loaded from local browser storage'
+    :'⚪ No saved state found';
+  document.getElementById('stateBanner').textContent=src;
+  document.getElementById('stateBanner').className=`state-banner${A.stateSource==='github'?'':' warn'}`;
+  document.getElementById('syncStats').innerHTML=
+    `${assigned} OZs with custom data<br>`+
+    Object.entries(waves).filter(([w])=>w!=='—').map(([w,n])=>`${w}: ${n}`).join(' · ')+
+    (assigned===0?'No wave assignments saved yet.':'');
 }
 
 function renderAll(){
-  renderOzTypeChips();
-  renderLayerToggles();
-  renderMarkers();
-  renderOverview();
-  renderFocusPanel();
-  renderSelectionList();
+  renderMap();renderStats();renderExploreList();
+  renderFocusPanel();renderOutreach();renderPipeline();renderSync();
 }
 
+/* ═══ ACTIONS ═══ */
+function bindActions(c){
+  c.querySelectorAll('[data-toggle]').forEach(b=>b.addEventListener('click',e=>{
+    const id=e.currentTarget.dataset.toggle,s=getSel();s.has(id)?s.delete(id):s.add(id);saveSel(s);renderAll();
+  }));
+  c.querySelectorAll('[data-remove]').forEach(b=>b.addEventListener('click',e=>{
+    const s=getSel();s.delete(e.currentTarget.dataset.remove);saveSel(s);renderAll();
+  }));
+  c.querySelectorAll('[data-focus]').forEach(b=>b.addEventListener('click',e=>{
+    A.focusedOzId=e.currentTarget.dataset.focus;A.highlightedId=null;switchTab('focus');renderAll();
+  }));
+  c.querySelectorAll('[data-focusp]').forEach(b=>b.addEventListener('click',e=>{
+    A.highlightedId=e.currentTarget.dataset.focusp;A.focusedOzId=null;switchTab('focus');renderAll();
+  }));
+}
+
+function switchTab(t){
+  document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===t));
+  document.querySelectorAll('.pane').forEach(p=>p.classList.toggle('active',p.id===`pane-${t}`));
+  curTab=t;
+}
+
+/* ═══ EXPORT / IMPORT ═══ */
+function exportCsv(){
+  const sel=[...getSel()].map(id=>A.byId.get(id)).filter(Boolean);
+  if(!sel.length){alert('No accounts in outreach selection.');return}
+  const rows=sel.map(x=>({company:x.name,email:x.email||'',phone:x.phone||'',website:x.website||'',address:x.street||'',zip:x.zip||'',city:x.city||'',state:x.region||'',country:'Germany',level:x.level,oz_type:x.organ||'',contact_person:x.contact||'',dkg_reg_nr:x.regNr||'',cert_until:x.certUntil||'',wave:x.level==='OZ'?x.wave||'':'',outreach_status:x.level==='OZ'?x.outreachStatus||'New':'',owner:x.level==='OZ'?x.owner||'':'',note:x.level==='OZ'?x.note||'':''}));
+  const hdr=Object.keys(rows[0]);
+  const csv=[hdr.join(','),...rows.map(r=>hdr.map(h=>{const v=String(r[h]??'');return/[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v}).join(','))].join('\n');
+  dl(`dkg_outreach_${new Date().toISOString().slice(0,10)}.csv`,csv,'text/csv;charset=utf-8');
+}
+function exportState(){
+  const payload=getStatePayload();
+  dl('state.json',JSON.stringify(payload,null,2),'application/json');
+}
+function dl(name,content,type){
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([content],{type}));a.download=name;a.click();
+}
+
+/* ═══ DATA LOADING ═══ */
+function setStatus(st,msg){document.getElementById('statusDot').className='sd '+st;document.getElementById('statusText').textContent=msg}
+async function loadBundle(b){
+  A.oz=[...normOZ(b.fulldb_oncos,'ONKO'),...normOZ(b.fulldb_viszes,'VISZ'),...normOZ(b.fulldb_uros,'URO')];
+  A.centers=normCenters(b.fulldb_centers);A.partners=normPartners(b.fulldb_partners);
+  A.all=[...A.oz,...A.centers,...A.partners];A.byId=new Map(A.all.map(x=>[x.id,x]));
+  buildRel(b.fulldb_oncos_centers,b.fulldb_viszes_centers,b.fulldb_uros_centers,b.fulldb_partners_centers);
+
+  // Load state: GitHub first (shared), then local fallback
+  const fromGithub=await loadGithubState();
+  if(!fromGithub) loadLocal();
+
+  fillFilters();renderAll();
+  setStatus('live',`${A.oz.length} OZ · ${A.centers.length} centres · ${A.partners.length} partners`+(b._updated?` · Data: ${new Date(b._updated).toLocaleDateString('en-GB')}`:''));
+}
 async function loadAll(){
-  els.apiStatus.textContent = 'Lade Live-Daten…';
+  setStatus('load','Loading data…');
+  try{const r=await fetch('./data/data.json',{cache:'no-store'});if(r.ok){await loadBundle(await r.json());return}}catch{}
+  setStatus('load','Fetching live APIs…');
   try{
-    const [centers, oncos, viszes, uros, partners, oncosCenters, viszesCenters, urosCenters, partnersCenters] = await Promise.all([
-      fetchJson(API.centers),
-      fetchJson(API.oncos),
-      fetchJson(API.viszes),
-      fetchJson(API.uros),
-      fetchJson(API.partners),
-      fetchJson(API.oncos_centers),
-      fetchJson(API.viszes_centers),
-      fetchJson(API.uros_centers),
-      fetchJson(API.partners_centers)
-    ]);
-
-    app.oz = [...normalizeOZ(oncos, 'ONKO'), ...normalizeOZ(viszes, 'VISZ'), ...normalizeOZ(uros, 'URO')];
-    app.centers = normalizeCenters(centers);
-    app.partners = normalizePartners(partners);
-    app.all = [...app.oz, ...app.centers, ...app.partners];
-    app.byId = new Map(app.all.map(x => [x.id, x]));
-
-    buildRelations(oncosCenters, viszesCenters, urosCenters, partnersCenters);
-    loadStateFromStorage();
-    fillFilters();
-    renderAll();
-
-    els.apiStatus.innerHTML = `Live geladen: ${app.oz.length} OZ · ${app.centers.length} Organzentren · ${app.partners.length} Partner`;
-  }catch(err){
-    console.error(err);
-    els.apiStatus.innerHTML = `Fehler beim Laden\n${esc(err.message || String(err))}`;
-  }
+    const [ct,on,vi,ur,pa,oc,vc,uc,pc]=await Promise.all(Object.values(LIVE).map(u=>fetch(u,{cache:'no-store',mode:'cors'}).then(r=>r.json())));
+    await loadBundle({fulldb_centers:ct,fulldb_oncos:on,fulldb_viszes:vi,fulldb_uros:ur,fulldb_partners:pa,fulldb_oncos_centers:oc,fulldb_viszes_centers:vc,fulldb_uros_centers:uc,fulldb_partners_centers:pc,_updated:null});
+    setStatus('live',`Live data · ${A.oz.length} OZ · ${A.centers.length} centres`);
+  }catch(e){setStatus('err','Error: '+e.message);console.error(e)}
 }
 
-els.reloadTop?.addEventListener('click', loadAll);
-
-els.minimizeBtn?.addEventListener('click', () => {
-  const shell = document.querySelector('.shell');
-  if(!shell) return;
-  const isMin = shell.classList.toggle('minimized');
-  els.minimizeBtn.textContent = isMin ? '+' : '−';
-  els.minimizeBtn.title = isMin ? 'Öffnen' : 'Minimieren';
-  if(isMin){
-    shell.style.height = 'auto';
-  } else {
-    shell.style.height = '';
-  }
+/* ═══ EVENT WIRING ═══ */
+document.getElementById('reloadBtn').addEventListener('click',loadAll);
+document.getElementById('clearFocusBtn').addEventListener('click',()=>{A.focusedOzId=null;A.highlightedId=null;renderAll()});
+document.getElementById('collapseBtn').addEventListener('click',()=>{
+  const b=document.getElementById('panelBody'),t=document.querySelector('.tabs'),s=document.querySelector('.status-bar'),col=b.style.display==='none';
+  b.style.display=col?'':'none';t.style.display=col?'':'none';s.style.display=col?'':'none';
+  document.getElementById('collapseBtn').textContent=col?'−':'+';
 });
-
-els.resetFiltersBtn.addEventListener('click', () => {
-  els.search.value = '';
-  els.organFilter.value = 'ALL';
-  els.regionFilter.value = 'ALL';
-  app.ozTypeFilter = 'ALL';
-  app.showOZ = true;
-  app.showCenters = true;
-  app.showPartners = true;
-  app.showUnassignedCenters = true;
-  app.focusedOzId = null;
-  app.selectedEntityId = null;
+document.getElementById('resetBtn').addEventListener('click',()=>{
+  document.getElementById('search').value='';document.getElementById('organFilter').value='ALL';document.getElementById('regionFilter').value='ALL';
+  A.ozTypeFilter='ALL';A.showOZ=true;A.showCenters=true;A.showPartners=true;A.showUnassigned=true;A.focusedOzId=null;A.highlightedId=null;
+  document.querySelectorAll('#ozTypeChips .chip').forEach(c=>c.classList.toggle('on',c.dataset.ozType==='ALL'));
+  document.querySelectorAll('#layerChips .chip').forEach(c=>c.classList.add('on'));
   renderAll();
 });
-
-els.clearFocusBtn.addEventListener('click', () => {
-  app.focusedOzId = null;
-  app.selectedEntityId = null;
-  els.focusPanel.innerHTML = '<div class="empty">Fokus entfernt. Wähle ein OZ oder Element.</div>';
-  renderAll();
+document.getElementById('addAllBtn').addEventListener('click',()=>{const s=getSel();getFiltered().forEach(x=>s.add(x.id));saveSel(s);renderAll();switchTab('outreach')});
+document.getElementById('clearAllBtn').addEventListener('click',()=>{saveSel(new Set());renderAll()});
+document.getElementById('exportCsvBtn').addEventListener('click',exportCsv);
+document.getElementById('exportStateBtn').addEventListener('click',exportState);
+document.getElementById('importStateBtn').addEventListener('click',()=>document.getElementById('importFileInput').click());
+document.getElementById('importFileInput').addEventListener('change',e=>{
+  const file=e.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    try{
+      const data=JSON.parse(ev.target.result);
+      applyStatePayload(data);A.stateSource='imported';saveLocal();
+      renderAll();alert(`Imported ${data.oz?.length||0} OZ assignments successfully.`);
+    }catch{alert('Invalid state.json file.')}
+  };reader.readAsText(file);
+  e.target.value='';
 });
-
-els.search.addEventListener('input', renderAll);
-els.organFilter.addEventListener('change', renderAll);
-els.regionFilter.addEventListener('change', renderAll);
-
-els.ozTypeChips?.querySelectorAll('[data-oz-type]').forEach(btn => btn.addEventListener('click', e => {
-  app.ozTypeFilter = e.currentTarget.dataset.ozType || 'ALL';
-  renderAll();
+document.getElementById('search').addEventListener('input',renderAll);
+document.getElementById('organFilter').addEventListener('change',renderAll);
+document.getElementById('regionFilter').addEventListener('change',renderAll);
+document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',e=>switchTab(e.currentTarget.dataset.tab)));
+document.querySelectorAll('#ozTypeChips .chip').forEach(b=>b.addEventListener('click',e=>{
+  A.ozTypeFilter=e.currentTarget.dataset.ozType;
+  document.querySelectorAll('#ozTypeChips .chip').forEach(c=>c.classList.toggle('on',c.dataset.ozType===A.ozTypeFilter));renderAll();
+}));
+document.querySelectorAll('#layerChips .chip').forEach(b=>b.addEventListener('click',e=>{
+  const l=e.currentTarget.dataset.layer;
+  if(l==='OZ')A.showOZ=!A.showOZ;if(l==='CENTER')A.showCenters=!A.showCenters;
+  if(l==='PARTNER')A.showPartners=!A.showPartners;if(l==='UNASSIGNED')A.showUnassigned=!A.showUnassigned;
+  e.currentTarget.classList.toggle('on');renderAll();
+}));
+document.querySelectorAll('#waveFilterBar .wfchip').forEach(b=>b.addEventListener('click',e=>{
+  A.pipelineWaveFilter=e.currentTarget.dataset.wf;renderPipeline();
 }));
 
-els.layerToggles?.querySelectorAll('[data-layer]').forEach(btn => btn.addEventListener('click', e => {
-  const layer = e.currentTarget.dataset.layer;
-  if(layer === 'OZ') app.showOZ = !app.showOZ;
-  if(layer === 'CENTER') app.showCenters = !app.showCenters;
-  if(layer === 'PARTNER') app.showPartners = !app.showPartners;
-  if(layer === 'UNASSIGNED') app.showUnassignedCenters = !app.showUnassignedCenters;
-  renderAll();
-}));
-
-els.exportBtn.addEventListener('click', exportCsv);
-
-els.clearAllSelectedBtn.addEventListener('click', () => {
-  saveSelectedUnits(new Set());
-  renderSelectionList();
-  renderFocusPanel();
+// ── Click on empty map clears focus and lines ──
+map.on('click',()=>{
+  if(A.focusedOzId||A.highlightedId){A.focusedOzId=null;A.highlightedId=null;renderAll()}
 });
-
-map.on('zoomend', renderMarkers);
-
+map.on('zoomend',renderMap);
 loadAll();
 </script>
 </body>
