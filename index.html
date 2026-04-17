@@ -9,19 +9,19 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
-:root {
-  --bg:#f4f6f9; --surface:#fff; --surface2:#f8f9fb;
-  --border:#e4e8ef; --border2:#d0d7e3;
-  --text:#1a2235; --muted:#6b7a96; --muted2:#9aa3b5;
-  --onko:#5b4cf5; --onko-bg:rgba(91,76,245,.08); --onko-bdr:rgba(91,76,245,.22);
-  --visz:#0d9e6e; --visz-bg:rgba(13,158,110,.08); --visz-bdr:rgba(13,158,110,.22);
-  --uro:#d97706; --uro-bg:rgba(217,119,6,.08); --uro-bdr:rgba(217,119,6,.22);
-  --center:#0077cc; --center-bg:rgba(0,119,204,.08); --center-bdr:rgba(0,119,204,.22);
-  --partner:#e05a2b; --partner-bg:rgba(224,90,43,.08); --partner-bdr:rgba(224,90,43,.22);
-  --accent:#2563eb; --accent-h:#1d4ed8;
-  --ok:#16a34a; --warn:#d97706; --red:#dc2626;
-  --w1:#5b4cf5; --w2:#0d9e6e; --w3:#d97706; --w4:#e05a2b;
-  --r:9px; --rl:14px;
+:root{
+  --bg:#f4f6f9;--surface:#fff;--surface2:#f8f9fb;
+  --border:#e4e8ef;--border2:#d0d7e3;
+  --text:#1a2235;--muted:#6b7a96;--muted2:#9aa3b5;
+  --onko:#5b4cf5;--onko-bg:rgba(91,76,245,.08);--onko-bdr:rgba(91,76,245,.22);
+  --visz:#0d9e6e;--visz-bg:rgba(13,158,110,.08);--visz-bdr:rgba(13,158,110,.22);
+  --uro:#d97706;--uro-bg:rgba(217,119,6,.08);--uro-bdr:rgba(217,119,6,.22);
+  --center:#0077cc;--center-bg:rgba(0,119,204,.08);--center-bdr:rgba(0,119,204,.22);
+  --partner:#e05a2b;--partner-bg:rgba(224,90,43,.08);--partner-bdr:rgba(224,90,43,.22);
+  --accent:#2563eb;--accent-h:#1d4ed8;
+  --ok:#16a34a;--warn:#d97706;--red:#dc2626;
+  --w1:#5b4cf5;--w2:#0d9e6e;--w3:#d97706;--w4:#e05a2b;
+  --r:9px;--rl:14px;
   --sh:0 1px 3px rgba(26,34,53,.08),0 4px 16px rgba(26,34,53,.06);
   --sans:'Instrument Sans',system-ui,sans-serif;
   --serif:'Instrument Serif',Georgia,serif;
@@ -30,8 +30,12 @@
 html,body{height:100%;overflow:hidden;font-family:var(--sans);background:var(--bg);color:var(--text);font-size:13px}
 #map{position:fixed;inset:0;z-index:0}
 .leaflet-tile-pane{filter:saturate(.85) brightness(1.04)}
+
+/* ── PANEL ── */
 .panel{position:fixed;top:14px;left:14px;bottom:14px;width:420px;z-index:9999;display:flex;flex-direction:column;gap:6px;pointer-events:none}
 .panel>*{pointer-events:all}
+
+/* ── HEADER ── */
 .hdr{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:13px 15px 11px;box-shadow:var(--sh);display:flex;align-items:center;justify-content:space-between;gap:10px;flex-shrink:0}
 .hdr-brand{display:flex;align-items:center;gap:10px}
 .hdr-logo{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,var(--accent) 0%,#7c3aed 100%);display:flex;align-items:center;justify-content:center;color:#fff;font-family:var(--serif);font-style:italic;font-size:16px;flex-shrink:0;box-shadow:0 2px 8px rgba(37,99,235,.3)}
@@ -40,34 +44,57 @@ html,body{height:100%;overflow:hidden;font-family:var(--sans);background:var(--b
 .hdr-actions{display:flex;gap:5px}
 .icon-btn{width:30px;height:30px;border-radius:8px;border:1px solid var(--border);background:var(--surface2);color:var(--muted);font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .13s}
 .icon-btn:hover{border-color:var(--border2);background:var(--surface);color:var(--text)}
+
+/* ── STATUS BAR ── */
 .status-bar{display:flex;align-items:center;gap:7px;flex-wrap:wrap;padding:7px 11px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);font-size:11px;color:var(--muted);font-family:'SF Mono','Fira Code',monospace;flex-shrink:0;box-shadow:var(--sh)}
 .sd{width:7px;height:7px;border-radius:50%;background:var(--muted2);flex-shrink:0}
 .sd.live{background:var(--ok);box-shadow:0 0 0 3px rgba(22,163,74,.15);animation:pulse 2.5s infinite}
 .sd.load{background:var(--warn);animation:pulse .9s infinite}
 .sd.err{background:var(--red)}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+
+/* ── TABS ── */
 .tabs{display:flex;gap:2px;padding:3px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);flex-shrink:0;box-shadow:var(--sh)}
 .tab{flex:1;padding:7px 4px;font-size:11px;font-weight:600;border-radius:7px;border:none;background:transparent;color:var(--muted);cursor:pointer;transition:all .13s;display:flex;align-items:center;justify-content:center;gap:4px;white-space:nowrap}
 .tab:hover{color:var(--text);background:var(--surface2)}
 .tab.active{background:var(--surface2);color:var(--text);box-shadow:0 1px 3px rgba(26,34,53,.08);font-weight:700}
 .tbadge{background:var(--accent);color:#fff;border-radius:999px;padding:1px 5px;font-size:9px;font-weight:700;min-width:16px;text-align:center}
-.body{overflow-y:auto;overflow-x:hidden;flex:1;min-height:0;display:flex;flex-direction:column;gap:6px;scrollbar-width:thin;scrollbar-color:var(--border2) transparent}
-.pane{display:none;flex-direction:column;gap:6px}
+
+/* ── SCROLLABLE BODY ── */
+.body{overflow-y:auto;overflow-x:hidden;flex:1;min-height:0;display:flex;flex-direction:column;gap:0;scrollbar-width:thin;scrollbar-color:var(--border2) transparent}
+.pane{display:none;flex-direction:column;gap:0}
 .pane.active{display:flex}
-.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);box-shadow:var(--sh);overflow:hidden}
+
+/* ── RESIZE HANDLE between cards ── */
+.rh{height:6px;flex-shrink:0;cursor:ns-resize;background:transparent;position:relative;z-index:1;transition:background .15s}
+.rh::after{content:'';position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:32px;height:2px;border-radius:2px;background:var(--border2);transition:background .15s}
+.rh:hover::after,.rh.dragging::after{background:var(--accent)}
+
+/* ── CARD ── */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);box-shadow:var(--sh);overflow:hidden;flex-shrink:0;margin-bottom:6px}
+.card.resizable{overflow:hidden}
 .ch{padding:9px 13px 8px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
 .ct{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.07em}
 .cb{padding:10px 12px;display:flex;flex-direction:column;gap:7px}
+
+/* ── SCROLLABLE card content area ── */
+.card-scroll{overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--border2) transparent}
+
+/* ── INPUTS ── */
 input[type=text],select,textarea{width:100%;padding:7px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);color:var(--text);font:inherit;font-size:12px;transition:border-color .13s;appearance:none}
 input[type=text]:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(37,99,235,.08)}
 input[type=text]::placeholder{color:var(--muted2)}
 textarea{min-height:52px;resize:vertical}
 select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='%236b7a96' d='M4 6l4 4 4-4'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center;padding-right:26px}
 .r2{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+
+/* ── CHIPS ── */
 .chips{display:flex;flex-wrap:wrap;gap:4px}
 .chip{font-size:10px;padding:4px 9px;border-radius:999px;border:1px solid var(--border);background:var(--surface2);color:var(--muted);font-weight:600;cursor:pointer;transition:all .12s}
 .chip:hover{border-color:var(--border2);color:var(--text)}
 .chip.on{background:rgba(37,99,235,.07);border-color:rgba(37,99,235,.3);color:var(--accent);font-weight:700}
+
+/* ── TAGS ── */
 .tag{display:inline-flex;align-items:center;padding:2px 7px;border-radius:999px;font-size:10px;font-weight:700;border:1px solid}
 .tag.onko{color:var(--onko);border-color:var(--onko-bdr);background:var(--onko-bg)}
 .tag.visz{color:var(--visz);border-color:var(--visz-bdr);background:var(--visz-bg)}
@@ -78,17 +105,18 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 .tag.w2{color:var(--w2);border-color:rgba(13,158,110,.25);background:rgba(13,158,110,.07)}
 .tag.w3{color:var(--w3);border-color:rgba(217,119,6,.25);background:rgba(217,119,6,.07)}
 .tag.w4{color:var(--w4);border-color:rgba(224,90,43,.25);background:rgba(224,90,43,.07)}
+
+/* ── STATUS BADGES ── */
 .sb{display:inline-flex;align-items:center;padding:2px 8px;border-radius:999px;font-size:10px;font-weight:700;border:1px solid}
 .s-new{color:#6b7a96;border-color:#d0d7e3;background:#f4f6f9}
 .s-contacted{color:var(--accent);border-color:rgba(37,99,235,.25);background:rgba(37,99,235,.07)}
 .s-replied{color:var(--visz);border-color:var(--visz-bdr);background:var(--visz-bg)}
 .s-meeting{color:var(--uro);border-color:var(--uro-bdr);background:var(--uro-bg)}
 .s-notinterested{color:var(--red);border-color:rgba(220,38,38,.25);background:rgba(220,38,38,.06)}
-.stat-row{display:flex;gap:6px}
-.stat{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:8px 10px}
-.sv{font-size:22px;font-weight:700;font-family:var(--serif);font-style:italic;line-height:1}
-.sl{font-size:10px;color:var(--muted);font-weight:600;margin-top:2px;text-transform:uppercase;letter-spacing:.05em}
-.item{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:9px 11px;transition:border-color .12s}
+
+/* ── ITEMS ── */
+.item{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:9px 11px;transition:border-color .12s;margin-bottom:4px}
+.item:last-child{margin-bottom:0}
 .item:hover{border-color:var(--border2)}
 .item.focused{border-color:var(--accent);background:rgba(37,99,235,.02)}
 .item.highlighted{border-color:var(--center);background:rgba(0,119,204,.02)}
@@ -99,6 +127,8 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 .imeta a:hover{text-decoration:underline}
 .iactions{display:flex;gap:4px;flex-wrap:wrap;margin-top:7px}
 .warn-cert{font-size:10px;color:var(--warn);font-weight:700;margin-top:3px}
+
+/* ── BUTTONS ── */
 .mb{font-size:10px;font-weight:600;padding:4px 9px;border-radius:7px;border:1px solid var(--border);background:var(--surface);color:var(--muted);cursor:pointer;transition:all .12s}
 .mb:hover{color:var(--text);border-color:var(--border2)}
 .mb.p{background:var(--accent);border-color:var(--accent);color:#fff}
@@ -108,39 +138,44 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 .btn{width:100%;padding:8px 12px;border-radius:var(--r);border:1px solid var(--border);background:var(--surface2);color:var(--text);font:inherit;font-size:12px;font-weight:600;cursor:pointer;transition:all .13s}
 .btn:hover{border-color:var(--border2);background:var(--surface)}
 .btn.p{background:var(--accent);border-color:var(--accent);color:#fff}
-.btn.p:hover{background:var(--accent-h)}
 .btn.exp{background:rgba(22,163,74,.07);border-color:rgba(22,163,74,.3);color:var(--ok);font-weight:700}
 .btn.exp:hover{background:rgba(22,163,74,.12)}
 .btn.imp{background:rgba(37,99,235,.07);border-color:rgba(37,99,235,.3);color:var(--accent);font-weight:700}
+
+/* ── EMPTY ── */
 .empty{border:1px dashed var(--border2);border-radius:var(--r);padding:16px;text-align:center;color:var(--muted2);font-size:11px;line-height:1.6}
 
-/* Pipeline wave board */
-.wave-board{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-bottom:2px}
+/* ── PIPELINE WAVE BOARD ── */
+.wave-board{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;padding:10px 12px}
 .wc{border:1.5px solid var(--border);border-radius:var(--r);padding:8px 10px;background:var(--surface2);cursor:pointer;transition:all .15s}
 .wc:hover{border-color:var(--border2)}
 .wc.wactive{border-color:currentColor}
 .wc-label{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;margin-bottom:2px}
 .wc-num{font-size:22px;font-weight:700;font-family:var(--serif);font-style:italic;line-height:1}
 .wc-stats{font-size:9px;color:var(--muted);margin-top:3px;line-height:1.5}
-.wave-filter-bar{display:flex;gap:4px;margin-bottom:4px}
+.wave-filter-bar{display:flex;gap:4px;padding:0 12px 8px}
 .wfchip{font-size:10px;padding:4px 10px;border-radius:999px;border:1px solid var(--border);background:var(--surface2);color:var(--muted);font-weight:600;cursor:pointer;transition:all .12s}
 .wfchip:hover{border-color:var(--border2);color:var(--text)}
 .wfchip.on{font-weight:700}
 
-/* State banner */
+/* ── STATE BANNER ── */
 .state-banner{display:flex;align-items:center;gap:8px;padding:8px 12px;background:rgba(37,99,235,.06);border:1px solid rgba(37,99,235,.2);border-radius:var(--r);font-size:11px;color:var(--accent)}
 .state-banner.warn{background:rgba(217,119,6,.06);border-color:rgba(217,119,6,.25);color:var(--warn)}
 
+/* ── LEGEND ── */
 #legend{position:fixed;right:14px;bottom:14px;z-index:9998;background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:10px 13px;box-shadow:0 4px 24px rgba(26,34,53,.12);font-size:11px;display:flex;flex-direction:column;gap:5px}
 .lr{display:flex;align-items:center;gap:7px;color:var(--muted)}
 .ld{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+
 @media(max-width:860px){.panel{right:14px;width:auto;bottom:46vh}#legend{display:none}}
 </style>
 </head>
 <body>
 <div id="map"></div>
 
-<div class="panel">
+<div class="panel" id="mainPanel">
+
+  <!-- HEADER -->
   <div class="hdr">
     <div class="hdr-brand">
       <div class="hdr-logo">R</div>
@@ -151,16 +186,18 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     </div>
     <div class="hdr-actions">
       <button class="icon-btn" id="reloadBtn" title="Reload data">↻</button>
-      <button class="icon-btn" id="clearFocusBtn" title="Clear map focus">✕</button>
+      <button class="icon-btn" id="resetBtn" title="Reset all filters and focus">✕</button>
       <button class="icon-btn" id="collapseBtn" title="Collapse panel">−</button>
     </div>
   </div>
 
+  <!-- STATUS -->
   <div class="status-bar">
     <span class="sd load" id="statusDot"></span>
     <span id="statusText">Loading data…</span>
   </div>
 
+  <!-- TABS -->
   <div class="tabs">
     <button class="tab active" data-tab="explore">🔍 Explore</button>
     <button class="tab" data-tab="focus">📍 Focus</button>
@@ -169,13 +206,15 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     <button class="tab" data-tab="sync">☁ Sync</button>
   </div>
 
+  <!-- BODY -->
   <div class="body" id="panelBody">
 
     <!-- EXPLORE -->
     <div class="pane active" id="pane-explore">
-      <div class="card">
-        <div class="ch"><span class="ct">Filters</span><button id="resetBtn" class="mb">Reset all</button></div>
-        <div class="cb">
+      <!-- Filters card — resizable -->
+      <div class="card resizable" id="card-filters" style="height:220px">
+        <div class="ch"><span class="ct">Filters</span></div>
+        <div class="card-scroll" style="height:calc(100% - 37px);padding:10px 12px;display:flex;flex-direction:column;gap:7px">
           <input type="text" id="search" placeholder="Search name, city, contact…"/>
           <div class="r2">
             <select id="organFilter"><option value="ALL">All organs</option></select>
@@ -201,17 +240,14 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
           </div>
         </div>
       </div>
-      <div class="stat-row">
-        <div class="stat"><div class="sv" id="statOZ">—</div><div class="sl">OZ total</div></div>
-        <div class="stat"><div class="sv" id="statCenter">—</div><div class="sl">Organ centres</div></div>
-        <div class="stat"><div class="sv" id="statPartner">—</div><div class="sl">Partners</div></div>
-      </div>
-      <div class="card">
+      <div class="rh" data-resize="card-filters,card-results"></div>
+      <!-- Results card — resizable -->
+      <div class="card resizable" id="card-results" style="flex:1;min-height:100px">
         <div class="ch">
           <span class="ct">Results</span>
           <button id="addAllBtn" class="mb p">Add all to outreach</button>
         </div>
-        <div style="max-height:340px;overflow-y:auto;display:flex;flex-direction:column;gap:4px;padding:10px 12px" id="exploreList">
+        <div class="card-scroll" id="exploreList" style="height:calc(100% - 37px);padding:10px 12px;display:flex;flex-direction:column;gap:4px">
           <div class="empty">Loading…</div>
         </div>
       </div>
@@ -219,40 +255,46 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 
     <!-- FOCUS -->
     <div class="pane" id="pane-focus">
-      <div id="focusPanel">
-        <div class="empty">Click an OZ on the map to explore its linked organ centres and partners.<br><br>Lines will show the network. Click anywhere on the map to clear.</div>
+      <div class="card" style="flex:1;min-height:0;overflow:hidden">
+        <div class="card-scroll" style="height:100%" id="focusPanel">
+          <div style="padding:20px" class="empty">Click an OZ on the map to explore its linked organ centres and partners.<br><br>Lines show the network. Click anywhere on the map to clear.</div>
+        </div>
       </div>
     </div>
 
     <!-- OUTREACH -->
     <div class="pane" id="pane-outreach">
-      <div class="card">
-        <div class="ch"><span class="ct">Outreach selection</span><button id="clearAllBtn" class="mb d">Clear all</button></div>
-        <div class="cb">
+      <div class="card resizable" id="card-outreach-top" style="height:52px;flex-shrink:0">
+        <div style="padding:10px 12px;display:flex;gap:6px;flex-wrap:wrap;align-items:center">
           <div class="chips" id="outreachSummary"></div>
-          <div style="max-height:340px;overflow-y:auto;display:flex;flex-direction:column;gap:4px" id="outreachList">
-            <div class="empty">No accounts selected yet.</div>
-          </div>
+          <button id="clearAllBtn" class="mb d" style="margin-left:auto">Clear all</button>
+        </div>
+      </div>
+      <div class="rh" data-resize="card-outreach-top,card-outreach-list"></div>
+      <div class="card resizable" id="card-outreach-list" style="flex:1;min-height:80px;overflow:hidden">
+        <div class="card-scroll" id="outreachList" style="height:calc(100% - 94px);padding:10px 12px;display:flex;flex-direction:column;gap:4px">
+          <div class="empty">No accounts selected yet.</div>
+        </div>
+        <div style="padding:8px 12px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:6px">
           <button id="exportCsvBtn" class="btn exp">⬇ Export HubSpot CSV</button>
-          <div style="font-size:10px;color:var(--muted);line-height:1.6">Fields: company, email, phone, city, state, oz_type, dkg_reg_nr, cert_until, wave, outreach_status.</div>
+          <div style="font-size:10px;color:var(--muted);line-height:1.5">Fields: company, email, phone, city, state, oz_type, dkg_reg_nr, cert_until, wave, outreach_status.</div>
         </div>
       </div>
     </div>
 
     <!-- PIPELINE -->
     <div class="pane" id="pane-pipeline">
-      <div class="card">
-        <div class="ch"><span class="ct">Wave overview</span></div>
-        <div class="cb">
+      <div class="card resizable" id="card-pipeline" style="flex:1;min-height:100px;overflow:hidden">
+        <div class="card-scroll" style="height:100%">
           <div class="wave-board" id="waveBoard"></div>
           <div class="wave-filter-bar" id="waveFilterBar">
-            <button class="wfchip on" data-wf="ALL">All waves</button>
+            <button class="wfchip on" data-wf="ALL">All</button>
             <button class="wfchip" data-wf="Wave 1" style="color:var(--w1)">Wave 1</button>
             <button class="wfchip" data-wf="Wave 2" style="color:var(--w2)">Wave 2</button>
             <button class="wfchip" data-wf="Wave 3" style="color:var(--w3)">Wave 3</button>
             <button class="wfchip" data-wf="Wave 4" style="color:var(--w4)">Wave 4</button>
           </div>
-          <div style="max-height:380px;overflow-y:auto;display:flex;flex-direction:column;gap:4px" id="pipelineList">
+          <div id="pipelineList" style="padding:0 12px 12px;display:flex;flex-direction:column;gap:4px">
             <div class="empty">No OZs assigned to a wave yet.</div>
           </div>
         </div>
@@ -264,46 +306,33 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
       <div class="card">
         <div class="ch"><span class="ct">State management</span></div>
         <div class="cb">
-          <div class="state-banner" id="stateBanner">
-            ℹ️ State is stored locally in this browser. Export to share with your team.
-          </div>
-          <div style="font-size:11px;color:var(--muted);line-height:1.6">
-            <strong>How it works:</strong> Wave assignments, outreach status and notes are saved in your browser. To share with the team, export the state file and commit it to the GitHub repo as <code>data/state.json</code>. Anyone opening the tool then loads the shared state automatically.
-          </div>
-          <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-top:4px">Export</div>
+          <div class="state-banner" id="stateBanner">ℹ️ State stored locally. Export to share with team.</div>
+          <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em">Export</div>
           <button id="exportStateBtn" class="btn exp">⬇ Export state.json</button>
-          <div style="font-size:10px;color:var(--muted);line-height:1.5">Download and commit to <code>data/state.json</code> in your GitHub repo. GitHub Actions will serve it automatically.</div>
-
+          <div style="font-size:10px;color:var(--muted);line-height:1.5">Download and commit to <code>data/state.json</code> in your GitHub repo. The tool loads it automatically on next open.</div>
           <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-top:4px">Import</div>
           <button id="importStateBtn" class="btn imp">⬆ Import state.json</button>
           <input type="file" id="importFileInput" accept=".json" style="display:none">
-          <div style="font-size:10px;color:var(--muted);line-height:1.5">Load a state.json file exported by a teammate to sync their wave assignments and notes into your session.</div>
-
-          <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-top:4px">Current state</div>
-          <div id="syncStats" style="font-size:11px;color:var(--muted);line-height:1.8"></div>
+          <div style="font-size:10px;color:var(--muted);line-height:1.5">Load a state.json exported by a teammate to sync their assignments into your session.</div>
+          <div id="syncStats" style="font-size:11px;color:var(--muted);line-height:1.8;border-top:1px solid var(--border);padding-top:8px;margin-top:4px"></div>
         </div>
       </div>
-
       <div class="card">
-        <div class="ch"><span class="ct">GitHub workflow</span></div>
+        <div class="ch"><span class="ct">Workflow</span></div>
         <div class="cb">
-          <div style="font-size:11px;color:var(--text);line-height:1.7">
-            <strong>Daily auto-update (already active):</strong><br>
-            GitHub Actions fetches fresh Oncomap data every night at 02:00 UTC → saves to <code>data/data.json</code>.<br><br>
-            <strong>Team state sharing:</strong><br>
-            1. Assign OZs to waves in the Focus tab<br>
-            2. Export <code>state.json</code> here<br>
-            3. Commit to repo: <code>data/state.json</code><br>
-            4. Team members reload the tool → shared state loads automatically<br><br>
-            <strong>What's saved in state.json:</strong><br>
-            Wave assignment · Outreach status · Owner · Notes — for every OZ you've edited.
+          <div style="font-size:11px;color:var(--text);line-height:1.8">
+            <strong>1.</strong> Assign OZs to waves in the Focus tab<br>
+            <strong>2.</strong> Export <code>state.json</code> here<br>
+            <strong>3.</strong> Commit to <code>data/state.json</code> in GitHub<br>
+            <strong>4.</strong> Team reloads the tool → shared state loads<br><br>
+            <strong>Oncomap data</strong> refreshes nightly via GitHub Actions automatically.
           </div>
         </div>
       </div>
     </div>
 
-  </div>
-</div>
+  </div><!-- /body -->
+</div><!-- /panel -->
 
 <div id="legend">
   <div class="lr"><div class="ld" style="background:var(--onko)"></div><span>ONKO — Oncology centre</span></div>
@@ -312,15 +341,17 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
   <div class="lr"><div class="ld" style="background:var(--center)"></div><span>Organ centre</span></div>
   <div class="lr"><div class="ld" style="background:var(--partner)"></div><span>Partner</span></div>
   <div class="lr" style="margin-top:4px;border-top:1px solid var(--border);padding-top:4px">
-    <svg width="20" height="8"><line x1="0" y1="4" x2="20" y2="4" stroke="#0077cc" stroke-width="2"/></svg><span>OZ → Centre</span>
+    <svg width="22" height="8"><line x1="0" y1="4" x2="22" y2="4" stroke="#0077cc" stroke-width="2"/></svg><span>OZ → Centre</span>
   </div>
   <div class="lr">
-    <svg width="20" height="8"><line x1="0" y1="4" x2="20" y2="4" stroke="#e05a2b" stroke-width="1.5" stroke-dasharray="3,3"/></svg><span>Centre → Partner</span>
+    <svg width="22" height="8"><line x1="0" y1="4" x2="22" y2="4" stroke="#e05a2b" stroke-width="1.5" stroke-dasharray="3,3"/></svg><span>Centre → Partner</span>
   </div>
 </div>
 
 <script>
-/* ═══ CONFIG ═══ */
+/* ══════════════════════════════════════════
+   CONFIG
+══════════════════════════════════════════ */
 const LIVE={
   centers:'https://api.oncomap.de/api/direct/fulldb_centers',
   oncos:'https://api.oncomap.de/api/direct/fulldb_oncos',
@@ -335,42 +366,50 @@ const LIVE={
 const SEL_KEY='dkg26_sel_v2';
 const WAVES=['—','Wave 1','Wave 2','Wave 3','Wave 4'];
 const STATUSES=['New','Contacted','Replied','Meeting','Not interested'];
+const MAX_PARTNER_DIST_KM=250; // ignore partner lines beyond this distance from OZ
 
-/* ═══ MAP ═══ */
+/* ══════════════════════════════════════════
+   MAP
+══════════════════════════════════════════ */
 const map=L.map('map',{zoomControl:false}).setView([51.2,10.4],6);
 L.control.zoom({position:'bottomright'}).addTo(map);
 L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{maxZoom:19,attribution:'© OpenStreetMap · © CARTO'}).addTo(map);
-map.createPane('lp'); map.getPane('lp').style.zIndex=500;
+map.createPane('lp');map.getPane('lp').style.zIndex=500;
 const LY={oz:L.layerGroup().addTo(map),center:L.layerGroup().addTo(map),partner:L.layerGroup().addTo(map),lines:L.layerGroup().addTo(map)};
 
-/* ═══ APP STATE ═══ */
+/* ══════════════════════════════════════════
+   APP STATE
+══════════════════════════════════════════ */
 const A={
   oz:[],centers:[],partners:[],all:[],byId:new Map(),
   ozToCenters:new Map(),centerToOz:new Map(),
   ozToPartners:new Map(),centerToPartners:new Map(),partnerToOz:new Map(),
-  focusedOzId:null,   // set ONLY by clicking an OZ directly
-  highlightedId:null, // set when clicking a centre/partner
+  focusedOzId:null,   // only set by deliberate OZ click
+  highlightedId:null, // set by centre/partner click — no line drawing
   ozTypeFilter:'ALL',
   showOZ:true,showCenters:true,showPartners:true,showUnassigned:true,
   pipelineWaveFilter:'ALL',
-  stateLoaded:false,
-  stateSource:null // 'local' | 'github' | 'imported'
+  stateSource:null
 };
 let curTab='explore';
 
-/* ═══ HELPERS ═══ */
+/* ══════════════════════════════════════════
+   HELPERS
+══════════════════════════════════════════ */
 const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 const num=x=>{const v=Number(String(x??'').trim().replace(',','.'));return isFinite(v)?v:null};
 function parseCert(v){try{const o=typeof v==='string'?JSON.parse(v):v;const d=Object.values(o||{}).filter(x=>/^\d{4}-\d{2}-\d{2}$/.test(String(x)));return d.length?d.sort().slice(-1)[0]:''}catch{return ''}}
 const MC=r=>r.level==='CENTER'?'#0077cc':r.level==='PARTNER'?'#e05a2b':r.organ==='VISZ'?'#0d9e6e':r.organ==='URO'?'#d97706':'#5b4cf5';
 
-// Cert expiry warning: flag if expires within 18 months
-function certWarn(certUntil){
-  if(!certUntil) return false;
-  const exp=new Date(certUntil), now=new Date();
-  const months=(exp-now)/(1000*60*60*24*30);
-  return months<=18;
+// Haversine distance in km between two lat/lon points
+function distKm(lat1,lon1,lat2,lon2){
+  const R=6371,dLat=(lat2-lat1)*Math.PI/180,dLon=(lon2-lon1)*Math.PI/180;
+  const a=Math.sin(dLat/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
+  return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
 }
+
+// Cert warning: expires within 18 months
+function certWarn(c){if(!c)return false;return(new Date(c)-new Date())/(1000*60*60*24*30)<=18}
 
 function wTag(w){if(!w||w==='—')return '';const m={'Wave 1':'w1','Wave 2':'w2','Wave 3':'w3','Wave 4':'w4'};return`<span class="tag ${m[w]||''}">${esc(w)}</span>`}
 function sBadge(s){const m={'New':'s-new','Contacted':'s-contacted','Replied':'s-replied','Meeting':'s-meeting','Not interested':'s-notinterested'};return`<span class="sb ${m[s]||'s-new'}">${esc(s||'New')}</span>`}
@@ -380,7 +419,9 @@ function typeTag(r){
   return`<span class="tag ${r.organ==='VISZ'?'visz':r.organ==='URO'?'uro':'onko'}">${esc(r.organ)}</span>`;
 }
 
-/* ═══ NORMALISE ═══ */
+/* ══════════════════════════════════════════
+   NORMALISE
+══════════════════════════════════════════ */
 function normOZ(rows,organ){
   return(rows||[]).map((r,i)=>{
     const lat=num(r.latitude),lon=num(r.longitude);
@@ -428,39 +469,28 @@ function buildRel(oc,vc,uc,pc){
   Object.assign(A,{ozToCenters:ozC,centerToOz:cOz,ozToPartners:ozP,centerToPartners:cP,partnerToOz:pOz});
 }
 
-/* ═══ STATE PERSISTENCE ═══ */
-function getStatePayload(){
-  return{
-    version:2,
-    exported:new Date().toISOString(),
+/* ══════════════════════════════════════════
+   STATE PERSISTENCE
+══════════════════════════════════════════ */
+function getPayload(){
+  return{version:2,exported:new Date().toISOString(),
     oz:A.oz.filter(x=>x.wave!=='—'||x.outreachStatus!=='New'||x.owner||x.note)
-      .map(x=>({id:x.id,wave:x.wave,outreachStatus:x.outreachStatus,owner:x.owner,note:x.note}))
-  };
+      .map(x=>({id:x.id,wave:x.wave,outreachStatus:x.outreachStatus,owner:x.owner,note:x.note}))};
 }
-function applyStatePayload(data){
-  if(!data?.oz) return;
+function applyPayload(data){
+  if(!data?.oz)return;
   const m=new Map(data.oz.map(r=>[r.id,r]));
   A.oz.forEach(oz=>{const s=m.get(oz.id);if(s){oz.wave=s.wave||oz.wave;oz.outreachStatus=s.outreachStatus||oz.outreachStatus;oz.owner=s.owner||oz.owner;oz.note=s.note||oz.note}});
 }
-function saveLocal(){
-  localStorage.setItem('dkg26_state_v2',JSON.stringify(getStatePayload()));
-}
-function loadLocal(){
-  try{const d=JSON.parse(localStorage.getItem('dkg26_state_v2')||'null');if(d){applyStatePayload(d);A.stateSource='local';return true}}catch{}
-  return false;
-}
-async function loadGithubState(){
-  try{
-    const r=await fetch('./data/state.json',{cache:'no-store'});
-    if(r.ok){const d=await r.json();applyStatePayload(d);A.stateSource='github';return true}
-  }catch{}
-  return false;
-}
-
+function saveLocal(){localStorage.setItem('dkg26_state_v2',JSON.stringify(getPayload()))}
+function loadLocal(){try{const d=JSON.parse(localStorage.getItem('dkg26_state_v2')||'null');if(d){applyPayload(d);A.stateSource='local';return true}}catch{}return false}
+async function loadGithubState(){try{const r=await fetch('./data/state.json',{cache:'no-store'});if(r.ok){applyPayload(await r.json());A.stateSource='github';return true}}catch{}return false}
 const getSel=()=>new Set(JSON.parse(localStorage.getItem(SEL_KEY)||'[]'));
 const saveSel=s=>localStorage.setItem(SEL_KEY,JSON.stringify([...s]));
 
-/* ═══ FILTERS ═══ */
+/* ══════════════════════════════════════════
+   FILTERS
+══════════════════════════════════════════ */
 function applyFilters(recs){
   const q=(document.getElementById('search').value||'').trim().toLowerCase();
   const org=document.getElementById('organFilter').value||'ALL';
@@ -484,12 +514,14 @@ function applyFilters(recs){
 }
 const getFiltered=()=>applyFilters(A.all);
 
-/* ═══ MAP — IMPROVED LINE LOGIC ═══ */
+/* ══════════════════════════════════════════
+   MAP — FIXED LINE LOGIC
+══════════════════════════════════════════ */
 function renderMap(){
   LY.oz.clearLayers();LY.center.clearLayers();LY.partner.clearLayers();LY.lines.clearLayers();
   const zoom=map.getZoom(),fil=getFiltered(),sel=getSel();
 
-  // Only show full network when an OZ is deliberately focused
+  // Visible records: when OZ focused, only show its network
   const vis=fil.filter(x=>{
     if(!A.focusedOzId)return true;
     if(x.id===A.focusedOzId)return true;
@@ -502,40 +534,36 @@ function renderMap(){
     if(r.level==='CENTER'&&zoom<=6&&!A.focusedOzId)return;
     if(r.level==='PARTNER'&&zoom<=8&&!A.focusedOzId)return;
 
-    // Emphasis: ONLY the focused OZ gets the large ring
-    const isFocused = r.id===A.focusedOzId;
-    const isHighlighted = r.id===A.highlightedId; // centre/partner clicked
-    const isSel = sel.has(r.id);
+    const isFocused=r.id===A.focusedOzId;
+    const isHighlighted=r.id===A.highlightedId;
+    const isSel=sel.has(r.id);
 
-    let radius = r.level==='OZ'?7:r.level==='CENTER'?5:4;
-    if(isFocused) radius=11;
-    else if(isHighlighted) radius=8;
+    // Radius: only focused OZ gets large ring
+    let radius=r.level==='OZ'?7:r.level==='CENTER'?5:4;
+    if(isFocused)radius=11;
+    else if(isHighlighted)radius=8;
 
-    // Weight: only focusedOZ gets thick outer ring; selected gets slight weight boost; rest minimal
-    const weight = isFocused?3 : isHighlighted?2 : isSel?2 : 1.5;
-    const fillOpacity = isFocused?1 : isHighlighted?.9 : isSel?.85 : .75;
+    // Weight: only focused OZ gets thick outline
+    const weight=isFocused?3:isHighlighted?2:isSel?1.8:1.5;
+    const fillOpacity=isFocused?1:isHighlighted?.9:isSel?.85:.75;
+    // White stroke ring only on the focused OZ so it pops on map
+    const strokeColor=isFocused?'#fff':MC(r);
 
-    // OZ dot colour: normal; focused gets white outer stroke to stand out on map
-    const strokeColor = isFocused?'#fff' : MC(r);
-
-    const m=L.circleMarker([r.latitude,r.longitude],{
-      radius,color:strokeColor,weight,fillOpacity,fillColor:MC(r)
-    });
+    const m=L.circleMarker([r.latitude,r.longitude],{radius,color:strokeColor,weight,fillOpacity,fillColor:MC(r)});
     m.bindTooltip(`<b>${r.name}</b><br><span style="color:#888">${r.city||''}</span>`,{direction:'top'});
 
     m.on('click',e=>{
-      L.DomEvent.stopPropagation(e); // prevent map click from firing
+      L.DomEvent.stopPropagation(e); // prevent map background click from firing
       if(r.level==='OZ'){
-        // Deliberately focusing: draw lines
+        // Deliberate OZ focus → draw lines
         A.focusedOzId=r.id;
         A.highlightedId=null;
-        switchTab('focus');
       } else {
-        // Centre/partner: highlight in panel but do NOT trigger line drawing
+        // Centre/partner → highlight in panel only, NO line drawing
         A.highlightedId=r.id;
         A.focusedOzId=null;
-        switchTab('focus');
       }
+      switchTab('focus');
       renderAll();
     });
 
@@ -544,26 +572,25 @@ function renderMap(){
     else LY.partner.addLayer(m);
   });
 
-  // ── LINES: only when OZ is deliberately focused ──
+  // Lines: ONLY when OZ deliberately focused
   if(A.focusedOzId){
     const oz=A.byId.get(A.focusedOzId);
     if(oz){
+      const ozLatLon=[oz.latitude,oz.longitude];
       const centerIds=[...(A.ozToCenters.get(oz.id)||new Set())];
       centerIds.forEach(cId=>{
         const c=A.byId.get(cId);if(!c)return;
-        // Primary line: OZ → Centre — solid, visible
-        const line=L.polyline([[oz.latitude,oz.longitude],[c.latitude,c.longitude]],{
-          color:'#0077cc',weight:2,opacity:0,pane:'lp',dashArray:null
-        }).addTo(LY.lines);
-        // Fade in
-        setTimeout(()=>line.setStyle({opacity:.55}),50);
+        // Primary line: OZ → Centre — solid blue, fades in
+        const l=L.polyline([ozLatLon,[c.latitude,c.longitude]],{color:'#0077cc',weight:2,opacity:0,pane:'lp'}).addTo(LY.lines);
+        setTimeout(()=>l.setStyle({opacity:.55}),50);
 
-        // Secondary lines: Centre → Partners — dashed, subtle
+        // Secondary lines: Centre → Partners — dashed orange
+        // Distance filter: skip if partner is unrealistically far from OZ
         (A.centerToPartners.get(cId)||new Set()).forEach(pId=>{
           const p=A.byId.get(pId);if(!p)return;
-          const pl=L.polyline([[c.latitude,c.longitude],[p.latitude,p.longitude]],{
-            color:'#e05a2b',weight:1.2,opacity:0,pane:'lp',dashArray:'4,5'
-          }).addTo(LY.lines);
+          const dist=distKm(oz.latitude,oz.longitude,p.latitude,p.longitude);
+          if(dist>MAX_PARTNER_DIST_KM)return; // skip implausible associations
+          const pl=L.polyline([[c.latitude,c.longitude],[p.latitude,p.longitude]],{color:'#e05a2b',weight:1.2,opacity:0,pane:'lp',dashArray:'4,5'}).addTo(LY.lines);
           setTimeout(()=>pl.setStyle({opacity:.35}),100);
         });
       });
@@ -571,18 +598,14 @@ function renderMap(){
   }
 }
 
-/* ═══ UI RENDERS ═══ */
+/* ══════════════════════════════════════════
+   UI
+══════════════════════════════════════════ */
 function fillFilters(){
   const organs=[...new Set(A.centers.map(x=>x.organ).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'de'));
   const regions=[...new Set(A.all.map(x=>x.region).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'de'));
   document.getElementById('organFilter').innerHTML='<option value="ALL">All organs</option>'+organs.map(v=>`<option value="${esc(v)}">${esc(v)}</option>`).join('');
   document.getElementById('regionFilter').innerHTML='<option value="ALL">All regions</option>'+regions.map(v=>`<option value="${esc(v)}">${esc(v)}</option>`).join('');
-}
-function renderStats(){
-  const f=getFiltered();
-  document.getElementById('statOZ').textContent=f.filter(x=>x.level==='OZ').length;
-  document.getElementById('statCenter').textContent=f.filter(x=>x.level==='CENTER').length;
-  document.getElementById('statPartner').textContent=f.filter(x=>x.level==='PARTNER').length;
 }
 
 function itemCard(r,sel,opts={}){
@@ -613,26 +636,26 @@ function renderExploreList(){
 function renderFocusPanel(){
   const panel=document.getElementById('focusPanel'),sel=getSel();
 
-  // Case 1: a centre or partner was highlighted (not OZ focused)
+  // Case: centre or partner highlighted (no OZ focus, no lines)
   if(A.highlightedId&&!A.focusedOzId){
     const r=A.byId.get(A.highlightedId);
-    if(!r){panel.innerHTML='<div class="empty">Not found.</div>';return}
+    if(!r){panel.innerHTML='<div style="padding:20px" class="empty">Not found.</div>';return}
     const parentOzs=r.level==='CENTER'
       ?[...(A.centerToOz.get(r.id)||new Set())].map(id=>A.byId.get(id)).filter(Boolean)
       :[...(A.partnerToOz.get(r.id)||new Set())].map(id=>A.byId.get(id)).filter(Boolean);
     const isSel=sel.has(r.id);
-    panel.innerHTML=`<div class="card">
-      <div class="ch"><span class="ct">${r.level==='CENTER'?'Organ centre':'Partner'}</span>
+    panel.innerHTML=`<div style="padding:12px;display:flex;flex-direction:column;gap:8px">
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <div class="itags">${typeTag(r)}</div>
         <button id="closeFocus" class="mb">✕</button>
       </div>
-      <div class="cb">
-        <div class="itags">${typeTag(r)}</div>
-        <div class="iname" style="font-size:14px;font-family:var(--serif);font-style:italic">${esc(r.name)}</div>
-        <div class="imeta">${esc(r.city||'')}${r.contact?`<br>${esc(r.contact)}`:''}${r.email?`<br><a href="mailto:${esc(r.email)}">${esc(r.email)}</a>`:''}${r.phone?`<br>${esc(r.phone)}`:''}${r.certUntil?`<br>Cert. until: <strong>${esc(r.certUntil)}</strong>`:''}</div>
-        ${parentOzs.length?`<div class="imeta" style="margin-top:6px"><strong>Parent OZ${parentOzs.length>1?'s':''}:</strong><br>${parentOzs.map(o=>`<button class="mb" style="margin-top:3px" data-focus="${esc(o.id)}">${esc(o.name)}</button>`).join(' ')}</div>`:'<div class="imeta" style="margin-top:6px">No parent OZ assigned.</div>'}
-        <div class="iactions">
-          <button class="mb${isSel?' sel':''}" data-toggle="${esc(r.id)}">${isSel?'✓ Selected':'+ Outreach'}</button>
-        </div>
+      <div class="iname" style="font-size:14px;font-family:var(--serif);font-style:italic">${esc(r.name)}</div>
+      <div class="imeta">${esc(r.city||'')}${r.contact?`<br>${esc(r.contact)}`:''}${r.email?`<br><a href="mailto:${esc(r.email)}">${esc(r.email)}</a>`:''}${r.phone?`<br>${esc(r.phone)}`:''}${r.certUntil?`<br>Cert. until: <strong>${esc(r.certUntil)}</strong>`:''}</div>
+      ${parentOzs.length
+        ?`<div class="imeta"><strong>Parent OZ${parentOzs.length>1?'s':''}:</strong><br>${parentOzs.map(o=>`<button class="mb" style="margin-top:3px" data-focus="${esc(o.id)}">${esc(o.name)}</button>`).join(' ')}</div>`
+        :'<div class="imeta">No parent OZ in database.</div>'}
+      <div class="iactions">
+        <button class="mb${isSel?' sel':''}" data-toggle="${esc(r.id)}">${isSel?'✓ Selected':'+ Outreach'}</button>
       </div>
     </div>`;
     document.getElementById('closeFocus')?.addEventListener('click',()=>{A.highlightedId=null;renderAll()});
@@ -640,47 +663,48 @@ function renderFocusPanel(){
     return;
   }
 
-  // Case 2: no OZ focused
+  // Case: nothing focused
   if(!A.focusedOzId){
-    panel.innerHTML='<div class="empty">Click an OZ on the map to explore its network.<br><br>Lines show OZ→centre (solid blue) and centre→partner (dashed orange).<br><br>Click anywhere on the map to clear focus.</div>';
+    panel.innerHTML='<div style="padding:20px" class="empty">Click an OZ on the map to explore its network.<br><br>Blue lines show OZ → centre connections. Orange dashed lines show centre → partner connections.<br><br>Click anywhere on the map to clear.</div>';
     return;
   }
 
-  // Case 3: OZ deliberately focused
+  // Case: OZ deliberately focused
   const oz=A.byId.get(A.focusedOzId);
-  if(!oz){panel.innerHTML='<div class="empty">OZ not found.</div>';return}
+  if(!oz){panel.innerHTML='<div style="padding:20px" class="empty">OZ not found.</div>';return}
   const centers=[...(A.ozToCenters.get(oz.id)||new Set())].map(id=>A.byId.get(id)).filter(Boolean);
   const partners=[...(A.ozToPartners.get(oz.id)||new Set())].map(id=>A.byId.get(id)).filter(Boolean);
+  // Apply same distance filter for partner display
+  const nearPartners=partners.filter(p=>distKm(oz.latitude,oz.longitude,p.latitude,p.longitude)<=MAX_PARTNER_DIST_KM);
   const isSel=sel.has(oz.id);
   const warn=certWarn(oz.certUntil);
 
-  panel.innerHTML=`
-  <div class="card">
-    <div class="ch"><span class="ct">Focused OZ</span><button id="closeFocus" class="mb">✕ Clear</button></div>
-    <div class="cb">
+  panel.innerHTML=`<div style="padding:12px;display:flex;flex-direction:column;gap:8px">
+    <div style="display:flex;align-items:center;justify-content:space-between">
       <div class="itags">${typeTag(oz)} ${wTag(oz.wave)} ${sBadge(oz.outreachStatus)}</div>
-      <div class="iname" style="font-size:14px;font-family:var(--serif);font-style:italic">${esc(oz.name)}</div>
-      <div class="imeta">${esc(oz.city||'')}${oz.subtitle?` · ${esc(oz.subtitle)}`:''}${oz.contact?`<br>${esc(oz.contact)}`:''}${oz.email?`<br><a href="mailto:${esc(oz.email)}">${esc(oz.email)}</a>`:''}${oz.phone?`<br>${esc(oz.phone)}`:''}${oz.regNr?`<br>DKG Reg.: <strong>${esc(oz.regNr)}</strong>`:''}${oz.certUntil?`<br>Cert. until: <strong>${esc(oz.certUntil)}</strong>`:''}</div>
-      ${warn?`<div class="warn-cert">⚠️ Certificate expires soon — high priority for Wave 1</div>`:''}
-      <div class="stat-row" style="margin-top:4px">
-        <div class="stat"><div class="sv">${centers.length}</div><div class="sl">Centres</div></div>
-        <div class="stat"><div class="sv">${partners.length}</div><div class="sl">Partners</div></div>
-      </div>
-      <div class="r2" style="margin-top:4px">
-        <select id="ozWave">${WAVES.map(v=>`<option value="${v}"${oz.wave===v?' selected':''}>${v}</option>`).join('')}</select>
-        <select id="ozStatus">${STATUSES.map(v=>`<option value="${v}"${oz.outreachStatus===v?' selected':''}>${v}</option>`).join('')}</select>
-      </div>
-      <input type="text" id="ozOwner" placeholder="Owner…" value="${esc(oz.owner||'')}"/>
-      <textarea id="ozNote" placeholder="Note…">${esc(oz.note||'')}</textarea>
-      <div class="iactions">
-        <button id="saveOzBtn" class="mb p">Save</button>
-        <button class="mb${isSel?' sel':''}" data-toggle="${esc(oz.id)}">${isSel?'✓ Selected':'+ Outreach'}</button>
-        <button id="selAllRel" class="mb">Select all (${centers.length+partners.length+1})</button>
-      </div>
+      <button id="closeFocus" class="mb">✕ Clear</button>
     </div>
-  </div>
-  ${centers.length?`<div class="card"><div class="ch"><span class="ct">Organ centres (${centers.length})</span></div><div style="padding:8px;display:flex;flex-direction:column;gap:4px">${centers.map(r=>itemCard(r,sel)).join('')}</div></div>`:''}
-  ${partners.length?`<div class="card"><div class="ch"><span class="ct">Partners (${partners.length})</span></div><div style="padding:8px;display:flex;flex-direction:column;gap:4px">${partners.map(r=>itemCard(r,sel)).join('')}</div></div>`:''}`;
+    <div class="iname" style="font-size:14px;font-family:var(--serif);font-style:italic">${esc(oz.name)}</div>
+    <div class="imeta">${esc(oz.city||'')}${oz.subtitle?` · ${esc(oz.subtitle)}`:''}${oz.contact?`<br>${esc(oz.contact)}`:''}${oz.email?`<br><a href="mailto:${esc(oz.email)}">${esc(oz.email)}</a>`:''}${oz.phone?`<br>${esc(oz.phone)}`:''}${oz.regNr?`<br>DKG Reg.: <strong>${esc(oz.regNr)}</strong>`:''}${oz.certUntil?`<br>Cert. until: <strong>${esc(oz.certUntil)}</strong>`:''}</div>
+    ${warn?`<div class="warn-cert">⚠️ Certificate expires soon — high priority for Wave 1</div>`:''}
+    <div style="display:flex;gap:6px">
+      <div style="flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:8px 10px"><div style="font-size:20px;font-weight:700;font-family:var(--serif);font-style:italic">${centers.length}</div><div style="font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.05em">Centres</div></div>
+      <div style="flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:8px 10px"><div style="font-size:20px;font-weight:700;font-family:var(--serif);font-style:italic">${nearPartners.length}</div><div style="font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.05em">Partners</div></div>
+    </div>
+    <div class="r2">
+      <select id="ozWave">${WAVES.map(v=>`<option value="${v}"${oz.wave===v?' selected':''}>${v}</option>`).join('')}</select>
+      <select id="ozStatus">${STATUSES.map(v=>`<option value="${v}"${oz.outreachStatus===v?' selected':''}>${v}</option>`).join('')}</select>
+    </div>
+    <input type="text" id="ozOwner" placeholder="Owner…" value="${esc(oz.owner||'')}"/>
+    <textarea id="ozNote" placeholder="Note…">${esc(oz.note||'')}</textarea>
+    <div class="iactions">
+      <button id="saveOzBtn" class="mb p">Save</button>
+      <button class="mb${isSel?' sel':''}" data-toggle="${esc(oz.id)}">${isSel?'✓ Selected':'+ Outreach'}</button>
+      <button id="selAllRel" class="mb">Select all (${centers.length+nearPartners.length+1})</button>
+    </div>
+    ${centers.length?`<div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em">Organ centres (${centers.length})</div>${centers.map(r=>itemCard(r,sel)).join('')}`:''}
+    ${nearPartners.length?`<div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-top:4px">Partners (${nearPartners.length})</div>${nearPartners.map(r=>itemCard(r,sel)).join('')}`:''}
+  </div>`;
 
   document.getElementById('closeFocus')?.addEventListener('click',()=>{A.focusedOzId=null;renderAll()});
   document.getElementById('saveOzBtn')?.addEventListener('click',()=>{
@@ -691,7 +715,7 @@ function renderFocusPanel(){
     saveLocal();renderAll();
   });
   document.getElementById('selAllRel')?.addEventListener('click',()=>{
-    const s=getSel();s.add(oz.id);centers.forEach(x=>s.add(x.id));partners.forEach(x=>s.add(x.id));
+    const s=getSel();s.add(oz.id);centers.forEach(x=>s.add(x.id));nearPartners.forEach(x=>s.add(x.id));
     saveSel(s);renderAll();switchTab('outreach');
   });
   bindActions(panel);
@@ -710,19 +734,15 @@ function renderOutreach(){
 }
 
 function renderPipeline(){
-  const WMAP={'Wave 1':'w1','Wave 2':'w2','Wave 3':'w3','Wave 4':'w4'};
-  const wcols={'Wave 1':'var(--w1)','Wave 2':'var(--w2)','Wave 3':'var(--w3)','Wave 4':'var(--w4)'};
   const waves=['Wave 1','Wave 2','Wave 3','Wave 4'];
+  const wcols={'Wave 1':'var(--w1)','Wave 2':'var(--w2)','Wave 3':'var(--w3)','Wave 4':'var(--w4)'};
   const wf=A.pipelineWaveFilter;
-
-  // Build counts + status breakdown per wave
-  const waveCounts={};
-  waves.forEach(w=>{waveCounts[w]={total:0,New:0,Contacted:0,Replied:0,Meeting:0,'Not interested':0}});
-  A.oz.forEach(oz=>{if(waveCounts[oz.wave]){waveCounts[oz.wave].total++;waveCounts[oz.wave][oz.outreachStatus]=(waveCounts[oz.wave][oz.outreachStatus]||0)+1}});
+  const counts={};
+  waves.forEach(w=>{counts[w]={total:0,New:0,Contacted:0,Replied:0,Meeting:0,'Not interested':0}});
+  A.oz.forEach(oz=>{if(counts[oz.wave]){counts[oz.wave].total++;counts[oz.wave][oz.outreachStatus]=(counts[oz.wave][oz.outreachStatus]||0)+1}});
 
   document.getElementById('waveBoard').innerHTML=waves.map(w=>{
-    const c=waveCounts[w];
-    const isActive=wf===w;
+    const c=counts[w],isActive=wf===w;
     const statusLine=[['Contacted',c.Contacted],['Replied',c.Replied],['Meeting',c.Meeting]].filter(([,n])=>n>0).map(([s,n])=>`${n} ${s}`).join(' · ')||'';
     return`<div class="wc${isActive?' wactive':''}" style="color:${wcols[w]}" data-wset="${esc(w)}">
       <div class="wc-label">${w}</div>
@@ -731,22 +751,25 @@ function renderPipeline(){
     </div>`;
   }).join('');
 
-  // Update wave filter chips active state
+  document.querySelectorAll('#waveBoard .wc').forEach(col=>col.addEventListener('click',e=>{
+    const w=e.currentTarget.dataset.wset;
+    A.pipelineWaveFilter=A.pipelineWaveFilter===w?'ALL':w;
+    renderPipeline();
+  }));
+
   document.querySelectorAll('#waveFilterBar .wfchip').forEach(c=>{
     c.classList.toggle('on',c.dataset.wf===wf);
-    if(c.dataset.wf!=='ALL'){const w=c.dataset.wf;c.style.background=wf===w?`rgba(${w==='Wave 1'?'91,76,245':w==='Wave 2'?'13,158,110':w==='Wave 3'?'217,119,6':'224,90,43'},.1)`:''}
   });
 
-  // Filter OZ list
   let active=A.oz.filter(oz=>oz.wave!=='—'||oz.outreachStatus!=='New'||oz.note||oz.owner);
-  if(wf!=='ALL') active=active.filter(oz=>oz.wave===wf);
-  active.sort((a,b)=>{const wi=waves.indexOf(a.wave)-waves.indexOf(b.wave);return wi||STATUSES.indexOf(b.outreachStatus)-STATUSES.indexOf(a.outreachStatus)});
+  if(wf!=='ALL')active=active.filter(oz=>oz.wave===wf);
+  active.sort((a,b)=>waves.indexOf(a.wave)-waves.indexOf(b.wave)||STATUSES.indexOf(b.outreachStatus)-STATUSES.indexOf(a.outreachStatus));
 
   const sel=getSel();
   const el=document.getElementById('pipelineList');
-  if(!active.length){el.innerHTML=`<div class="empty">${wf==='ALL'?'No OZs assigned yet. Focus an OZ and assign it a wave.':'No OZs in '+wf+' yet.'}</div>`;return}
+  if(!active.length){el.innerHTML=`<div class="empty">${wf==='ALL'?'No OZs assigned yet. Focus an OZ and set its wave.':'No OZs in '+wf+' yet.'}</div>`;return}
   el.innerHTML=active.map(oz=>`<div class="item">
-    <div class="itags">${typeTag(oz)} ${wTag(oz.wave)} ${sBadge(oz.outreachStatus)}${certWarn(oz.certUntil)?'<span style="font-size:10px;color:var(--warn);font-weight:700">⚠️</span>':''}</div>
+    <div class="itags">${typeTag(oz)} ${wTag(oz.wave)} ${sBadge(oz.outreachStatus)}${certWarn(oz.certUntil)?'<span style="font-size:10px;color:var(--warn);font-weight:700;margin-left:2px">⚠️</span>':''}</div>
     <div class="iname">${esc(oz.name)}</div>
     <div class="imeta">${esc(oz.city||'')}${oz.owner?` · <strong>${esc(oz.owner)}</strong>`:''}</div>
     ${oz.note?`<div class="imeta" style="font-style:italic;margin-top:2px">${esc(oz.note)}</div>`:''}
@@ -755,38 +778,32 @@ function renderPipeline(){
       <button class="mb${sel.has(oz.id)?' sel':''}" data-toggle="${esc(oz.id)}">${sel.has(oz.id)?'✓ Selected':'+ Outreach'}</button>
     </div>
   </div>`).join('');
-
-  // Click on wave board column to filter
-  document.querySelectorAll('#waveBoard .wc').forEach(col=>col.addEventListener('click',e=>{
-    const w=e.currentTarget.dataset.wset;
-    A.pipelineWaveFilter=A.pipelineWaveFilter===w?'ALL':w;
-    renderPipeline();
-  }));
   bindActions(el);
 }
 
 function renderSync(){
-  const payload=getStatePayload();
-  const assigned=payload.oz.length;
-  const waves={};payload.oz.forEach(o=>{waves[o.wave]=(waves[o.wave]||0)+1});
-  const src=A.stateSource==='github'?'☁ Loaded from GitHub (shared state)'
+  const p=getPayload();
+  const src=A.stateSource==='github'?'☁ Loaded from GitHub — shared state'
     :A.stateSource==='imported'?'📁 Loaded from imported file'
     :A.stateSource==='local'?'💾 Loaded from local browser storage'
     :'⚪ No saved state found';
-  document.getElementById('stateBanner').textContent=src;
-  document.getElementById('stateBanner').className=`state-banner${A.stateSource==='github'?'':' warn'}`;
+  const banner=document.getElementById('stateBanner');
+  banner.textContent=src;
+  banner.className=`state-banner${A.stateSource==='github'?'':' warn'}`;
+  const wv={};p.oz.forEach(o=>{wv[o.wave]=(wv[o.wave]||0)+1});
   document.getElementById('syncStats').innerHTML=
-    `${assigned} OZs with custom data<br>`+
-    Object.entries(waves).filter(([w])=>w!=='—').map(([w,n])=>`${w}: ${n}`).join(' · ')+
-    (assigned===0?'No wave assignments saved yet.':'');
+    `${p.oz.length} OZs with data · `+
+    (Object.entries(wv).filter(([w])=>w!=='—').map(([w,n])=>`${w}: ${n}`).join(' · ')||'No wave assignments yet');
 }
 
 function renderAll(){
-  renderMap();renderStats();renderExploreList();
+  renderMap();renderExploreList();
   renderFocusPanel();renderOutreach();renderPipeline();renderSync();
 }
 
-/* ═══ ACTIONS ═══ */
+/* ══════════════════════════════════════════
+   ACTION BINDING
+══════════════════════════════════════════ */
 function bindActions(c){
   c.querySelectorAll('[data-toggle]').forEach(b=>b.addEventListener('click',e=>{
     const id=e.currentTarget.dataset.toggle,s=getSel();s.has(id)?s.delete(id):s.add(id);saveSel(s);renderAll();
@@ -808,7 +825,43 @@ function switchTab(t){
   curTab=t;
 }
 
-/* ═══ EXPORT / IMPORT ═══ */
+/* ══════════════════════════════════════════
+   RESIZABLE PANELS
+══════════════════════════════════════════ */
+(function(){
+  let drag=null,startY=0,startHA=0,startHB=0,elA=null,elB=null;
+
+  document.querySelectorAll('.rh').forEach(handle=>{
+    handle.addEventListener('mousedown',e=>{
+      const [idA,idB]=(handle.dataset.resize||'').split(',');
+      elA=document.getElementById(idA);elB=document.getElementById(idB);
+      if(!elA||!elB)return;
+      drag=handle;startY=e.clientY;
+      startHA=elA.offsetHeight;startHB=elB.offsetHeight;
+      handle.classList.add('dragging');
+      document.body.style.cursor='ns-resize';
+      document.body.style.userSelect='none';
+      e.preventDefault();
+    });
+  });
+
+  document.addEventListener('mousemove',e=>{
+    if(!drag)return;
+    const dy=e.clientY-startY;
+    const newA=Math.max(60,startHA+dy);
+    const newB=Math.max(60,startHB-dy);
+    elA.style.height=newA+'px';elA.style.flex='none';
+    elB.style.height=newB+'px';elB.style.flex='none';
+  });
+
+  document.addEventListener('mouseup',()=>{
+    if(drag){drag.classList.remove('dragging');drag=null;document.body.style.cursor='';document.body.style.userSelect=''}
+  });
+})();
+
+/* ══════════════════════════════════════════
+   EXPORT / IMPORT
+══════════════════════════════════════════ */
 function exportCsv(){
   const sel=[...getSel()].map(id=>A.byId.get(id)).filter(Boolean);
   if(!sel.length){alert('No accounts in outreach selection.');return}
@@ -817,29 +870,28 @@ function exportCsv(){
   const csv=[hdr.join(','),...rows.map(r=>hdr.map(h=>{const v=String(r[h]??'');return/[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v}).join(','))].join('\n');
   dl(`dkg_outreach_${new Date().toISOString().slice(0,10)}.csv`,csv,'text/csv;charset=utf-8');
 }
-function exportState(){
-  const payload=getStatePayload();
-  dl('state.json',JSON.stringify(payload,null,2),'application/json');
-}
-function dl(name,content,type){
-  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([content],{type}));a.download=name;a.click();
-}
+function exportState(){dl('state.json',JSON.stringify(getPayload(),null,2),'application/json')}
+function dl(name,content,type){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([content],{type}));a.download=name;a.click()}
 
-/* ═══ DATA LOADING ═══ */
+/* ══════════════════════════════════════════
+   DATA LOADING
+══════════════════════════════════════════ */
 function setStatus(st,msg){document.getElementById('statusDot').className='sd '+st;document.getElementById('statusText').textContent=msg}
+
 async function loadBundle(b){
   A.oz=[...normOZ(b.fulldb_oncos,'ONKO'),...normOZ(b.fulldb_viszes,'VISZ'),...normOZ(b.fulldb_uros,'URO')];
-  A.centers=normCenters(b.fulldb_centers);A.partners=normPartners(b.fulldb_partners);
-  A.all=[...A.oz,...A.centers,...A.partners];A.byId=new Map(A.all.map(x=>[x.id,x]));
+  A.centers=normCenters(b.fulldb_centers);
+  A.partners=normPartners(b.fulldb_partners);
+  A.all=[...A.oz,...A.centers,...A.partners];
+  A.byId=new Map(A.all.map(x=>[x.id,x]));
   buildRel(b.fulldb_oncos_centers,b.fulldb_viszes_centers,b.fulldb_uros_centers,b.fulldb_partners_centers);
-
-  // Load state: GitHub first (shared), then local fallback
-  const fromGithub=await loadGithubState();
-  if(!fromGithub) loadLocal();
-
+  // Load state: GitHub shared first, then local fallback
+  const fromGH=await loadGithubState();
+  if(!fromGH)loadLocal();
   fillFilters();renderAll();
   setStatus('live',`${A.oz.length} OZ · ${A.centers.length} centres · ${A.partners.length} partners`+(b._updated?` · Data: ${new Date(b._updated).toLocaleDateString('en-GB')}`:''));
 }
+
 async function loadAll(){
   setStatus('load','Loading data…');
   try{const r=await fetch('./data/data.json',{cache:'no-store'});if(r.ok){await loadBundle(await r.json());return}}catch{}
@@ -851,22 +903,34 @@ async function loadAll(){
   }catch(e){setStatus('err','Error: '+e.message);console.error(e)}
 }
 
-/* ═══ EVENT WIRING ═══ */
+/* ══════════════════════════════════════════
+   EVENT WIRING
+══════════════════════════════════════════ */
 document.getElementById('reloadBtn').addEventListener('click',loadAll);
-document.getElementById('clearFocusBtn').addEventListener('click',()=>{A.focusedOzId=null;A.highlightedId=null;renderAll()});
+
+// ✕ button: full reset — filters, focus, tab
+document.getElementById('resetBtn').addEventListener('click',()=>{
+  A.focusedOzId=null;A.highlightedId=null;
+  A.ozTypeFilter='ALL';A.showOZ=true;A.showCenters=true;A.showPartners=true;A.showUnassigned=true;
+  document.getElementById('search').value='';
+  document.getElementById('organFilter').value='ALL';
+  document.getElementById('regionFilter').value='ALL';
+  document.querySelectorAll('#ozTypeChips .chip').forEach(c=>c.classList.toggle('on',c.dataset.ozType==='ALL'));
+  document.querySelectorAll('#layerChips .chip').forEach(c=>c.classList.add('on'));
+  switchTab('explore');
+  renderAll();
+});
+
 document.getElementById('collapseBtn').addEventListener('click',()=>{
-  const b=document.getElementById('panelBody'),t=document.querySelector('.tabs'),s=document.querySelector('.status-bar'),col=b.style.display==='none';
+  const b=document.getElementById('panelBody'),t=document.querySelector('.tabs'),s=document.querySelector('.status-bar');
+  const col=b.style.display==='none';
   b.style.display=col?'':'none';t.style.display=col?'':'none';s.style.display=col?'':'none';
   document.getElementById('collapseBtn').textContent=col?'−':'+';
 });
-document.getElementById('resetBtn').addEventListener('click',()=>{
-  document.getElementById('search').value='';document.getElementById('organFilter').value='ALL';document.getElementById('regionFilter').value='ALL';
-  A.ozTypeFilter='ALL';A.showOZ=true;A.showCenters=true;A.showPartners=true;A.showUnassigned=true;A.focusedOzId=null;A.highlightedId=null;
-  document.querySelectorAll('#ozTypeChips .chip').forEach(c=>c.classList.toggle('on',c.dataset.ozType==='ALL'));
-  document.querySelectorAll('#layerChips .chip').forEach(c=>c.classList.add('on'));
-  renderAll();
+
+document.getElementById('addAllBtn').addEventListener('click',()=>{
+  const s=getSel();getFiltered().forEach(x=>s.add(x.id));saveSel(s);renderAll();switchTab('outreach');
 });
-document.getElementById('addAllBtn').addEventListener('click',()=>{const s=getSel();getFiltered().forEach(x=>s.add(x.id));saveSel(s);renderAll();switchTab('outreach')});
 document.getElementById('clearAllBtn').addEventListener('click',()=>{saveSel(new Set());renderAll()});
 document.getElementById('exportCsvBtn').addEventListener('click',exportCsv);
 document.getElementById('exportStateBtn').addEventListener('click',exportState);
@@ -875,21 +939,21 @@ document.getElementById('importFileInput').addEventListener('change',e=>{
   const file=e.target.files[0];if(!file)return;
   const reader=new FileReader();
   reader.onload=ev=>{
-    try{
-      const data=JSON.parse(ev.target.result);
-      applyStatePayload(data);A.stateSource='imported';saveLocal();
-      renderAll();alert(`Imported ${data.oz?.length||0} OZ assignments successfully.`);
-    }catch{alert('Invalid state.json file.')}
-  };reader.readAsText(file);
-  e.target.value='';
+    try{const data=JSON.parse(ev.target.result);applyPayload(data);A.stateSource='imported';saveLocal();renderAll();alert(`Imported ${data.oz?.length||0} OZ assignments.`)}
+    catch{alert('Invalid state.json file.')}
+  };
+  reader.readAsText(file);e.target.value='';
 });
+
 document.getElementById('search').addEventListener('input',renderAll);
 document.getElementById('organFilter').addEventListener('change',renderAll);
 document.getElementById('regionFilter').addEventListener('change',renderAll);
+
 document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',e=>switchTab(e.currentTarget.dataset.tab)));
 document.querySelectorAll('#ozTypeChips .chip').forEach(b=>b.addEventListener('click',e=>{
   A.ozTypeFilter=e.currentTarget.dataset.ozType;
-  document.querySelectorAll('#ozTypeChips .chip').forEach(c=>c.classList.toggle('on',c.dataset.ozType===A.ozTypeFilter));renderAll();
+  document.querySelectorAll('#ozTypeChips .chip').forEach(c=>c.classList.toggle('on',c.dataset.ozType===A.ozTypeFilter));
+  renderAll();
 }));
 document.querySelectorAll('#layerChips .chip').forEach(b=>b.addEventListener('click',e=>{
   const l=e.currentTarget.dataset.layer;
@@ -901,11 +965,12 @@ document.querySelectorAll('#waveFilterBar .wfchip').forEach(b=>b.addEventListene
   A.pipelineWaveFilter=e.currentTarget.dataset.wf;renderPipeline();
 }));
 
-// ── Click on empty map clears focus and lines ──
+// Click on empty map → clear all focus and lines
 map.on('click',()=>{
   if(A.focusedOzId||A.highlightedId){A.focusedOzId=null;A.highlightedId=null;renderAll()}
 });
 map.on('zoomend',renderMap);
+
 loadAll();
 </script>
 </body>
