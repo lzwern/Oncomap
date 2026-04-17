@@ -295,7 +295,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
             <button class="wfchip" data-wf="Wave 4" style="color:var(--w4)">Wave 4</button>
           </div>
           <div id="pipelineList" style="padding:0 12px 12px;display:flex;flex-direction:column;gap:4px">
-            <div class="empty">No OZs assigned to a wave yet.</div>
+            <div class="empty">No records assigned to a wave yet.</div>
           </div>
         </div>
       </div>
@@ -321,7 +321,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
         <div class="ch"><span class="ct">Workflow</span></div>
         <div class="cb">
           <div style="font-size:11px;color:var(--text);line-height:1.8">
-            <strong>1.</strong> Assign OZs to waves in the Focus tab<br>
+            <strong>1.</strong> Assign waves in the Focus tab<br>
             <strong>2.</strong> Export <code>state.json</code> here<br>
             <strong>3.</strong> Commit to <code>data/state.json</code> in GitHub<br>
             <strong>4.</strong> Team reloads the tool → shared state loads<br><br>
@@ -384,8 +384,8 @@ const A={
   oz:[],centers:[],partners:[],all:[],byId:new Map(),
   ozToCenters:new Map(),centerToOz:new Map(),
   ozToPartners:new Map(),centerToPartners:new Map(),partnerToOz:new Map(),
-  focusedOzId:null,   // only set by deliberate OZ click
-  highlightedId:null, // set by centre/partner click — no line drawing
+  focusedOzId:null,
+  highlightedId:null,
   ozTypeFilter:'ALL',
   showOZ:true,showCenters:true,showPartners:true,showUnassigned:true,
   pipelineWaveFilter:'ALL',
@@ -401,14 +401,12 @@ const num=x=>{const v=Number(String(x??'').trim().replace(',','.'));return isFin
 function parseCert(v){try{const o=typeof v==='string'?JSON.parse(v):v;const d=Object.values(o||{}).filter(x=>/^\d{4}-\d{2}-\d{2}$/.test(String(x)));return d.length?d.sort().slice(-1)[0]:''}catch{return ''}}
 const MC=r=>r.level==='CENTER'?'#0077cc':r.level==='PARTNER'?'#e05a2b':r.organ==='VISZ'?'#0d9e6e':r.organ==='URO'?'#d97706':'#5b4cf5';
 
-// Haversine distance in km between two lat/lon points
 function distKm(lat1,lon1,lat2,lon2){
   const R=6371,dLat=(lat2-lat1)*Math.PI/180,dLon=(lon2-lon1)*Math.PI/180;
   const a=Math.sin(dLat/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
   return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
 }
 
-// Cert warning: expires within 18 months
 function certWarn(c){if(!c)return false;return(new Date(c)-new Date())/(1000*60*60*24*30)<=18}
 
 function wTag(w){if(!w||w==='—')return '';const m={'Wave 1':'w1','Wave 2':'w2','Wave 3':'w3','Wave 4':'w4'};return`<span class="tag ${m[w]||''}">${esc(w)}</span>`}
@@ -445,7 +443,8 @@ function normCenters(rows){
       city:r.loc||r.ort||'',street:r.street||'',zip:r.zip||'',phone:r.phone||'',
       email:r.email||r.mail||r.p_email||'',website:r.url||'',
       contact:[r.p_title,r.p_fname,r.p_lname].filter(Boolean).join(' ').trim(),
-      regNr:r.reg_nr||'',certUntil:parseCert(r.certificate_types),latitude:lat,longitude:lon};
+      regNr:r.reg_nr||'',certUntil:parseCert(r.certificate_types),latitude:lat,longitude:lon,
+      wave:'—'};
   }).filter(Boolean);
 }
 function normPartners(rows){
@@ -457,7 +456,8 @@ function normPartners(rows){
       city:r.loc||r.ort||'',street:r.street||'',zip:r.zip||'',phone:r.phone||'',
       email:r.email||r.mail||r.p_email||'',website:r.url||'',
       contact:[r.p_title,r.p_fname,r.p_lname].filter(Boolean).join(' ').trim(),
-      latitude:lat,longitude:lon};
+      latitude:lat,longitude:lon,
+      wave:'—'};
   }).filter(Boolean);
 }
 function buildRel(oc,vc,uc,pc){
@@ -473,14 +473,33 @@ function buildRel(oc,vc,uc,pc){
    STATE PERSISTENCE
 ══════════════════════════════════════════ */
 function getPayload(){
-  return{version:2,exported:new Date().toISOString(),
-    oz:A.oz.filter(x=>x.wave!=='—'||x.outreachStatus!=='New'||x.owner||x.note)
-      .map(x=>({id:x.id,wave:x.wave,outreachStatus:x.outreachStatus,owner:x.owner,note:x.note}))};
+  const records=A.all
+    .filter(x=>(x.wave && x.wave!=='—') || (x.level==='OZ' && (x.outreachStatus!=='New'||x.owner||x.note)))
+    .map(x=>({
+      id:x.id,
+      wave:x.wave||'—',
+      ...(x.level==='OZ'?{
+        outreachStatus:x.outreachStatus,
+        owner:x.owner,
+        note:x.note
+      }:{})
+    }));
+  return{version:3,exported:new Date().toISOString(),records};
 }
 function applyPayload(data){
-  if(!data?.oz)return;
-  const m=new Map(data.oz.map(r=>[r.id,r]));
-  A.oz.forEach(oz=>{const s=m.get(oz.id);if(s){oz.wave=s.wave||oz.wave;oz.outreachStatus=s.outreachStatus||oz.outreachStatus;oz.owner=s.owner||oz.owner;oz.note=s.note||oz.note}});
+  const rows=data?.records || data?.oz || [];
+  if(!rows.length)return;
+  const m=new Map(rows.map(r=>[r.id,r]));
+  A.all.forEach(rec=>{
+    const s=m.get(rec.id);
+    if(!s)return;
+    rec.wave=s.wave || rec.wave || '—';
+    if(rec.level==='OZ'){
+      rec.outreachStatus=s.outreachStatus || rec.outreachStatus;
+      rec.owner=s.owner || rec.owner;
+      rec.note=s.note || rec.note;
+    }
+  });
 }
 function saveLocal(){localStorage.setItem('dkg26_state_v2',JSON.stringify(getPayload()))}
 function loadLocal(){try{const d=JSON.parse(localStorage.getItem('dkg26_state_v2')||'null');if(d){applyPayload(d);A.stateSource='local';return true}}catch{}return false}
@@ -521,7 +540,6 @@ function renderMap(){
   LY.oz.clearLayers();LY.center.clearLayers();LY.partner.clearLayers();LY.lines.clearLayers();
   const zoom=map.getZoom(),fil=getFiltered(),sel=getSel();
 
-  // Visible records: when OZ focused, only show its network
   const vis=fil.filter(x=>{
     if(!A.focusedOzId)return true;
     if(x.id===A.focusedOzId)return true;
@@ -538,28 +556,23 @@ function renderMap(){
     const isHighlighted=r.id===A.highlightedId;
     const isSel=sel.has(r.id);
 
-    // Radius: only focused OZ gets large ring
     let radius=r.level==='OZ'?7:r.level==='CENTER'?5:4;
     if(isFocused)radius=11;
     else if(isHighlighted)radius=8;
 
-    // Weight: only focused OZ gets thick outline
     const weight=isFocused?3:isHighlighted?2:isSel?1.8:1.5;
     const fillOpacity=isFocused?1:isHighlighted?.9:isSel?.85:.75;
-    // White stroke ring only on the focused OZ so it pops on map
     const strokeColor=isFocused?'#fff':MC(r);
 
     const m=L.circleMarker([r.latitude,r.longitude],{radius,color:strokeColor,weight,fillOpacity,fillColor:MC(r)});
     m.bindTooltip(`<b>${r.name}</b><br><span style="color:#888">${r.city||''}</span>`,{direction:'top'});
 
     m.on('click',e=>{
-      L.DomEvent.stopPropagation(e); // prevent map background click from firing
+      L.DomEvent.stopPropagation(e);
       if(r.level==='OZ'){
-        // Deliberate OZ focus → draw lines
         A.focusedOzId=r.id;
         A.highlightedId=null;
       } else {
-        // Centre/partner → highlight in panel only, NO line drawing
         A.highlightedId=r.id;
         A.focusedOzId=null;
       }
@@ -572,7 +585,6 @@ function renderMap(){
     else LY.partner.addLayer(m);
   });
 
-  // Lines: ONLY when OZ deliberately focused
   if(A.focusedOzId){
     const oz=A.byId.get(A.focusedOzId);
     if(oz){
@@ -580,16 +592,13 @@ function renderMap(){
       const centerIds=[...(A.ozToCenters.get(oz.id)||new Set())];
       centerIds.forEach(cId=>{
         const c=A.byId.get(cId);if(!c)return;
-        // Primary line: OZ → Centre — solid blue, fades in
         const l=L.polyline([ozLatLon,[c.latitude,c.longitude]],{color:'#0077cc',weight:2,opacity:0,pane:'lp'}).addTo(LY.lines);
         setTimeout(()=>l.setStyle({opacity:.55}),50);
 
-        // Secondary lines: Centre → Partners — dashed orange
-        // Distance filter: skip if partner is unrealistically far from OZ
         (A.centerToPartners.get(cId)||new Set()).forEach(pId=>{
           const p=A.byId.get(pId);if(!p)return;
           const dist=distKm(oz.latitude,oz.longitude,p.latitude,p.longitude);
-          if(dist>MAX_PARTNER_DIST_KM)return; // skip implausible associations
+          if(dist>MAX_PARTNER_DIST_KM)return;
           const pl=L.polyline([[c.latitude,c.longitude],[p.latitude,p.longitude]],{color:'#e05a2b',weight:1.2,opacity:0,pane:'lp',dashArray:'4,5'}).addTo(LY.lines);
           setTimeout(()=>pl.setStyle({opacity:.35}),100);
         });
@@ -612,7 +621,7 @@ function itemCard(r,sel,opts={}){
   const isSel=sel.has(r.id),isFoc=r.id===A.focusedOzId,isHigh=r.id===A.highlightedId;
   const warn=r.level==='OZ'&&certWarn(r.certUntil);
   return`<div class="item${isFoc?' focused':isHigh?' highlighted':''}">
-    <div class="itags">${typeTag(r)}${r.level==='OZ'?wTag(r.wave):''}${r.level==='OZ'?sBadge(r.outreachStatus):''}</div>
+    <div class="itags">${typeTag(r)}${wTag(r.wave)}${r.level==='OZ'?sBadge(r.outreachStatus):''}</div>
     <div class="iname">${esc(r.name)}</div>
     <div class="imeta">${esc(r.city||'')}${r.subtitle&&r.subtitle!==r.organ?` · ${esc(r.subtitle)}`:''}${r.contact?`<br>${esc(r.contact)}`:''}${r.email?`<br><a href="mailto:${esc(r.email)}">${esc(r.email)}</a>`:''}${r.phone?`<br>${esc(r.phone)}`:''}${r.certUntil?`<br>Cert. until: <strong>${esc(r.certUntil)}</strong>`:''}</div>
     ${warn?`<div class="warn-cert">⚠️ Cert expires soon — high priority</div>`:''}
@@ -636,7 +645,6 @@ function renderExploreList(){
 function renderFocusPanel(){
   const panel=document.getElementById('focusPanel'),sel=getSel();
 
-  // Case: centre or partner highlighted (no OZ focus, no lines)
   if(A.highlightedId&&!A.focusedOzId){
     const r=A.byId.get(A.highlightedId);
     if(!r){panel.innerHTML='<div style="padding:20px" class="empty">Not found.</div>';return}
@@ -646,7 +654,7 @@ function renderFocusPanel(){
     const isSel=sel.has(r.id);
     panel.innerHTML=`<div style="padding:12px;display:flex;flex-direction:column;gap:8px">
       <div style="display:flex;align-items:center;justify-content:space-between">
-        <div class="itags">${typeTag(r)}</div>
+        <div class="itags">${typeTag(r)} ${wTag(r.wave)}</div>
         <button id="closeFocus" class="mb">✕</button>
       </div>
       <div class="iname" style="font-size:14px;font-family:var(--serif);font-style:italic">${esc(r.name)}</div>
@@ -654,27 +662,36 @@ function renderFocusPanel(){
       ${parentOzs.length
         ?`<div class="imeta"><strong>Parent OZ${parentOzs.length>1?'s':''}:</strong><br>${parentOzs.map(o=>`<button class="mb" style="margin-top:3px" data-focus="${esc(o.id)}">${esc(o.name)}</button>`).join(' ')}</div>`
         :'<div class="imeta">No parent OZ in database.</div>'}
+      <div class="r2">
+        <select id="entityWave">
+          ${WAVES.map(v=>`<option value="${v}"${r.wave===v?' selected':''}>${v}</option>`).join('')}
+        </select>
+        <div></div>
+      </div>
       <div class="iactions">
+        <button id="saveEntityWaveBtn" class="mb p">Save wave</button>
         <button class="mb${isSel?' sel':''}" data-toggle="${esc(r.id)}">${isSel?'✓ Selected':'+ Outreach'}</button>
       </div>
     </div>`;
     document.getElementById('closeFocus')?.addEventListener('click',()=>{A.highlightedId=null;renderAll()});
+    document.getElementById('saveEntityWaveBtn')?.addEventListener('click',()=>{
+      r.wave=document.getElementById('entityWave').value;
+      saveLocal();
+      renderAll();
+    });
     bindActions(panel);
     return;
   }
 
-  // Case: nothing focused
   if(!A.focusedOzId){
     panel.innerHTML='<div style="padding:20px" class="empty">Click an OZ on the map to explore its network.<br><br>Blue lines show OZ → centre connections. Orange dashed lines show centre → partner connections.<br><br>Click anywhere on the map to clear.</div>';
     return;
   }
 
-  // Case: OZ deliberately focused
   const oz=A.byId.get(A.focusedOzId);
   if(!oz){panel.innerHTML='<div style="padding:20px" class="empty">OZ not found.</div>';return}
   const centers=[...(A.ozToCenters.get(oz.id)||new Set())].map(id=>A.byId.get(id)).filter(Boolean);
   const partners=[...(A.ozToPartners.get(oz.id)||new Set())].map(id=>A.byId.get(id)).filter(Boolean);
-  // Apply same distance filter for partner display
   const nearPartners=partners.filter(p=>distKm(oz.latitude,oz.longitude,p.latitude,p.longitude)<=MAX_PARTNER_DIST_KM);
   const isSel=sel.has(oz.id);
   const warn=certWarn(oz.certUntil);
@@ -699,6 +716,7 @@ function renderFocusPanel(){
     <textarea id="ozNote" placeholder="Note…">${esc(oz.note||'')}</textarea>
     <div class="iactions">
       <button id="saveOzBtn" class="mb p">Save</button>
+      <button id="applyWaveToRelated" class="mb">Apply wave to related</button>
       <button class="mb${isSel?' sel':''}" data-toggle="${esc(oz.id)}">${isSel?'✓ Selected':'+ Outreach'}</button>
       <button id="selAllRel" class="mb">Select all (${centers.length+nearPartners.length+1})</button>
     </div>
@@ -713,6 +731,13 @@ function renderFocusPanel(){
     oz.owner=document.getElementById('ozOwner').value.trim();
     oz.note=document.getElementById('ozNote').value.trim();
     saveLocal();renderAll();
+  });
+  document.getElementById('applyWaveToRelated')?.addEventListener('click',()=>{
+    const w=document.getElementById('ozWave').value;
+    centers.forEach(x=>x.wave=w);
+    nearPartners.forEach(x=>x.wave=w);
+    saveLocal();
+    renderAll();
   });
   document.getElementById('selAllRel')?.addEventListener('click',()=>{
     const s=getSel();s.add(oz.id);centers.forEach(x=>s.add(x.id));nearPartners.forEach(x=>s.add(x.id));
@@ -738,12 +763,23 @@ function renderPipeline(){
   const wcols={'Wave 1':'var(--w1)','Wave 2':'var(--w2)','Wave 3':'var(--w3)','Wave 4':'var(--w4)'};
   const wf=A.pipelineWaveFilter;
   const counts={};
-  waves.forEach(w=>{counts[w]={total:0,New:0,Contacted:0,Replied:0,Meeting:0,'Not interested':0}});
-  A.oz.forEach(oz=>{if(counts[oz.wave]){counts[oz.wave].total++;counts[oz.wave][oz.outreachStatus]=(counts[oz.wave][oz.outreachStatus]||0)+1}});
+  waves.forEach(w=>{counts[w]={total:0,OZ:0,CENTER:0,PARTNER:0,New:0,Contacted:0,Replied:0,Meeting:0,'Not interested':0}});
+
+  A.all.forEach(rec=>{
+    if(counts[rec.wave]){
+      counts[rec.wave].total++;
+      counts[rec.wave][rec.level]=(counts[rec.wave][rec.level]||0)+1;
+      if(rec.level==='OZ')counts[rec.wave][rec.outreachStatus]=(counts[rec.wave][rec.outreachStatus]||0)+1;
+    }
+  });
 
   document.getElementById('waveBoard').innerHTML=waves.map(w=>{
     const c=counts[w],isActive=wf===w;
-    const statusLine=[['Contacted',c.Contacted],['Replied',c.Replied],['Meeting',c.Meeting]].filter(([,n])=>n>0).map(([s,n])=>`${n} ${s}`).join(' · ')||'';
+    const statusLine=[
+      c.OZ?`${c.OZ} OZ`:'',
+      c.CENTER?`${c.CENTER} centres`:'',
+      c.PARTNER?`${c.PARTNER} partners`:''
+    ].filter(Boolean).join(' · ')||'';
     return`<div class="wc${isActive?' wactive':''}" style="color:${wcols[w]}" data-wset="${esc(w)}">
       <div class="wc-label">${w}</div>
       <div class="wc-num">${c.total}</div>
@@ -761,21 +797,29 @@ function renderPipeline(){
     c.classList.toggle('on',c.dataset.wf===wf);
   });
 
-  let active=A.oz.filter(oz=>oz.wave!=='—'||oz.outreachStatus!=='New'||oz.note||oz.owner);
-  if(wf!=='ALL')active=active.filter(oz=>oz.wave===wf);
-  active.sort((a,b)=>waves.indexOf(a.wave)-waves.indexOf(b.wave)||STATUSES.indexOf(b.outreachStatus)-STATUSES.indexOf(a.outreachStatus));
+  let active=A.all.filter(rec=>rec.wave && rec.wave!=='—');
+  if(wf!=='ALL')active=active.filter(rec=>rec.wave===wf);
+
+  active.sort((a,b)=>{
+    const waveCmp=waves.indexOf(a.wave)-waves.indexOf(b.wave);
+    if(waveCmp!==0)return waveCmp;
+    const levelOrder={OZ:0,CENTER:1,PARTNER:2};
+    return (levelOrder[a.level]??9)-(levelOrder[b.level]??9) || a.name.localeCompare(b.name,'de');
+  });
 
   const sel=getSel();
   const el=document.getElementById('pipelineList');
-  if(!active.length){el.innerHTML=`<div class="empty">${wf==='ALL'?'No OZs assigned yet. Focus an OZ and set its wave.':'No OZs in '+wf+' yet.'}</div>`;return}
-  el.innerHTML=active.map(oz=>`<div class="item">
-    <div class="itags">${typeTag(oz)} ${wTag(oz.wave)} ${sBadge(oz.outreachStatus)}${certWarn(oz.certUntil)?'<span style="font-size:10px;color:var(--warn);font-weight:700;margin-left:2px">⚠️</span>':''}</div>
-    <div class="iname">${esc(oz.name)}</div>
-    <div class="imeta">${esc(oz.city||'')}${oz.owner?` · <strong>${esc(oz.owner)}</strong>`:''}</div>
-    ${oz.note?`<div class="imeta" style="font-style:italic;margin-top:2px">${esc(oz.note)}</div>`:''}
+  if(!active.length){el.innerHTML=`<div class="empty">${wf==='ALL'?'No records assigned yet. Focus a record and set its wave.':'No records in '+wf+' yet.'}</div>`;return}
+  el.innerHTML=active.map(rec=>`<div class="item">
+    <div class="itags">${typeTag(rec)} ${wTag(rec.wave)}${rec.level==='OZ'?' '+sBadge(rec.outreachStatus):''}${rec.level==='OZ'&&certWarn(rec.certUntil)?'<span style="font-size:10px;color:var(--warn);font-weight:700;margin-left:2px">⚠️</span>':''}</div>
+    <div class="iname">${esc(rec.name)}</div>
+    <div class="imeta">${esc(rec.city||'')}${rec.level==='OZ'&&rec.owner?` · <strong>${esc(rec.owner)}</strong>`:''}</div>
+    ${rec.level==='OZ'&&rec.note?`<div class="imeta" style="font-style:italic;margin-top:2px">${esc(rec.note)}</div>`:''}
     <div class="iactions">
-      <button class="mb" data-focus="${esc(oz.id)}">Focus</button>
-      <button class="mb${sel.has(oz.id)?' sel':''}" data-toggle="${esc(oz.id)}">${sel.has(oz.id)?'✓ Selected':'+ Outreach'}</button>
+      ${rec.level==='OZ'
+        ?`<button class="mb" data-focus="${esc(rec.id)}">Focus</button>`
+        :`<button class="mb" data-focusp="${esc(rec.id)}">Highlight</button>`}
+      <button class="mb${sel.has(rec.id)?' sel':''}" data-toggle="${esc(rec.id)}">${sel.has(rec.id)?'✓ Selected':'+ Outreach'}</button>
     </div>
   </div>`).join('');
   bindActions(el);
@@ -790,9 +834,10 @@ function renderSync(){
   const banner=document.getElementById('stateBanner');
   banner.textContent=src;
   banner.className=`state-banner${A.stateSource==='github'?'':' warn'}`;
-  const wv={};p.oz.forEach(o=>{wv[o.wave]=(wv[o.wave]||0)+1});
+  const rows=p.records || p.oz || [];
+  const wv={}; rows.forEach(o=>{wv[o.wave]=(wv[o.wave]||0)+1});
   document.getElementById('syncStats').innerHTML=
-    `${p.oz.length} OZs with data · `+
+    `${rows.length} records with data · `+
     (Object.entries(wv).filter(([w])=>w!=='—').map(([w,n])=>`${w}: ${n}`).join(' · ')||'No wave assignments yet');
 }
 
@@ -865,7 +910,7 @@ function switchTab(t){
 function exportCsv(){
   const sel=[...getSel()].map(id=>A.byId.get(id)).filter(Boolean);
   if(!sel.length){alert('No accounts in outreach selection.');return}
-  const rows=sel.map(x=>({company:x.name,email:x.email||'',phone:x.phone||'',website:x.website||'',address:x.street||'',zip:x.zip||'',city:x.city||'',state:x.region||'',country:'Germany',level:x.level,oz_type:x.organ||'',contact_person:x.contact||'',dkg_reg_nr:x.regNr||'',cert_until:x.certUntil||'',wave:x.level==='OZ'?x.wave||'':'',outreach_status:x.level==='OZ'?x.outreachStatus||'New':'',owner:x.level==='OZ'?x.owner||'':'',note:x.level==='OZ'?x.note||'':''}));
+  const rows=sel.map(x=>({company:x.name,email:x.email||'',phone:x.phone||'',website:x.website||'',address:x.street||'',zip:x.zip||'',city:x.city||'',state:x.region||'',country:'Germany',level:x.level,oz_type:x.organ||'',contact_person:x.contact||'',dkg_reg_nr:x.regNr||'',cert_until:x.certUntil||'',wave:x.wave||'',outreach_status:x.level==='OZ'?x.outreachStatus||'New':'',owner:x.level==='OZ'?x.owner||'':'',note:x.level==='OZ'?x.note||'':''}));
   const hdr=Object.keys(rows[0]);
   const csv=[hdr.join(','),...rows.map(r=>hdr.map(h=>{const v=String(r[h]??'');return/[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v}).join(','))].join('\n');
   dl(`dkg_outreach_${new Date().toISOString().slice(0,10)}.csv`,csv,'text/csv;charset=utf-8');
@@ -885,7 +930,6 @@ async function loadBundle(b){
   A.all=[...A.oz,...A.centers,...A.partners];
   A.byId=new Map(A.all.map(x=>[x.id,x]));
   buildRel(b.fulldb_oncos_centers,b.fulldb_viszes_centers,b.fulldb_uros_centers,b.fulldb_partners_centers);
-  // Load state: GitHub shared first, then local fallback
   const fromGH=await loadGithubState();
   if(!fromGH)loadLocal();
   fillFilters();renderAll();
@@ -908,7 +952,6 @@ async function loadAll(){
 ══════════════════════════════════════════ */
 document.getElementById('reloadBtn').addEventListener('click',loadAll);
 
-// ✕ button: full reset — filters, focus, tab
 document.getElementById('resetBtn').addEventListener('click',()=>{
   A.focusedOzId=null;A.highlightedId=null;
   A.ozTypeFilter='ALL';A.showOZ=true;A.showCenters=true;A.showPartners=true;A.showUnassigned=true;
@@ -939,7 +982,7 @@ document.getElementById('importFileInput').addEventListener('change',e=>{
   const file=e.target.files[0];if(!file)return;
   const reader=new FileReader();
   reader.onload=ev=>{
-    try{const data=JSON.parse(ev.target.result);applyPayload(data);A.stateSource='imported';saveLocal();renderAll();alert(`Imported ${data.oz?.length||0} OZ assignments.`)}
+    try{const data=JSON.parse(ev.target.result);applyPayload(data);A.stateSource='imported';saveLocal();renderAll();alert(`Imported ${(data.records||data.oz||[]).length} saved records.`)}
     catch{alert('Invalid state.json file.')}
   };
   reader.readAsText(file);e.target.value='';
@@ -965,7 +1008,6 @@ document.querySelectorAll('#waveFilterBar .wfchip').forEach(b=>b.addEventListene
   A.pipelineWaveFilter=e.currentTarget.dataset.wf;renderPipeline();
 }));
 
-// Click on empty map → clear all focus and lines
 map.on('click',()=>{
   if(A.focusedOzId||A.highlightedId){A.focusedOzId=null;A.highlightedId=null;renderAll()}
 });
