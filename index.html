@@ -143,7 +143,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 .btn.imp{background:rgba(37,99,235,.07);border-color:rgba(37,99,235,.3);color:var(--accent);font-weight:700}
 
 /* ── EMPTY ── */
-.empty{border:1px dashed var(--border2);border-radius:var(--r);padding:16px;text-align:center;color:var(--muted2);font-size:11px;line-height:1.6}
+.empty{border:1px dashed var(--border2);border-radius:var(--r);padding:166px;text-align:center;color:var(--muted2);font-size:11px;line-height:1.6}
 
 /* ── PIPELINE WAVE BOARD ── */
 .wave-board{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;padding:10px 12px}
@@ -175,7 +175,6 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 
 <div class="panel" id="mainPanel">
 
-  <!-- HEADER -->
   <div class="hdr">
     <div class="hdr-brand">
       <div class="hdr-logo">R</div>
@@ -191,13 +190,11 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     </div>
   </div>
 
-  <!-- STATUS -->
   <div class="status-bar">
     <span class="sd load" id="statusDot"></span>
     <span id="statusText">Loading data…</span>
   </div>
 
-  <!-- TABS -->
   <div class="tabs">
     <button class="tab active" data-tab="explore">🔍 Explore</button>
     <button class="tab" data-tab="focus">📍 Focus</button>
@@ -206,12 +203,9 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     <button class="tab" data-tab="sync">☁ Sync</button>
   </div>
 
-  <!-- BODY -->
   <div class="body" id="panelBody">
 
-    <!-- EXPLORE -->
     <div class="pane active" id="pane-explore">
-      <!-- Filters card — resizable -->
       <div class="card resizable" id="card-filters" style="height:220px">
         <div class="ch"><span class="ct">Filters</span></div>
         <div class="card-scroll" style="height:calc(100% - 37px);padding:10px 12px;display:flex;flex-direction:column;gap:7px">
@@ -241,7 +235,6 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
         </div>
       </div>
       <div class="rh" data-resize="card-filters,card-results"></div>
-      <!-- Results card — resizable -->
       <div class="card resizable" id="card-results" style="flex:1;min-height:100px">
         <div class="ch">
           <span class="ct">Results</span>
@@ -253,7 +246,6 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
       </div>
     </div>
 
-    <!-- FOCUS -->
     <div class="pane" id="pane-focus">
       <div class="card" style="flex:1;min-height:0;overflow:hidden">
         <div class="card-scroll" style="height:100%" id="focusPanel">
@@ -262,7 +254,6 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
       </div>
     </div>
 
-    <!-- OUTREACH -->
     <div class="pane" id="pane-outreach">
       <div class="card resizable" id="card-outreach-top" style="height:52px;flex-shrink:0">
         <div style="padding:10px 12px;display:flex;gap:6px;flex-wrap:wrap;align-items:center">
@@ -282,7 +273,6 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
       </div>
     </div>
 
-    <!-- PIPELINE -->
     <div class="pane" id="pane-pipeline">
       <div class="card resizable" id="card-pipeline" style="flex:1;min-height:100px;overflow:hidden">
         <div class="card-scroll" style="height:100%">
@@ -301,7 +291,6 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
       </div>
     </div>
 
-    <!-- SYNC -->
     <div class="pane" id="pane-sync">
       <div class="card">
         <div class="ch"><span class="ct">State management</span></div>
@@ -331,10 +320,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
       </div>
     </div>
 
-  </div><!-- /body -->
-</div><!-- /panel -->
-
-<div id="legend">
+  </div></div><div id="legend">
   <div class="lr"><div class="ld" style="background:var(--onko)"></div><span>ONKO — Oncology centre</span></div>
   <div class="lr"><div class="ld" style="background:var(--visz)"></div><span>VISZ — Visceral centre</span></div>
   <div class="lr"><div class="ld" style="background:var(--uro)"></div><span>URO — Urology centre</span></div>
@@ -444,7 +430,7 @@ function normCenters(rows){
       email:r.email||r.mail||r.p_email||'',website:r.url||'',
       contact:[r.p_title,r.p_fname,r.p_lname].filter(Boolean).join(' ').trim(),
       regNr:r.reg_nr||'',certUntil:parseCert(r.certificate_types),latitude:lat,longitude:lon,
-      wave:'—'};
+      wave:'—',outreachStatus:'New',owner:'',note:''};
   }).filter(Boolean);
 }
 function normPartners(rows){
@@ -457,7 +443,7 @@ function normPartners(rows){
       email:r.email||r.mail||r.p_email||'',website:r.url||'',
       contact:[r.p_title,r.p_fname,r.p_lname].filter(Boolean).join(' ').trim(),
       latitude:lat,longitude:lon,
-      wave:'—'};
+      wave:'—',outreachStatus:'New',owner:'',note:''};
   }).filter(Boolean);
 }
 function buildRel(oc,vc,uc,pc){
@@ -474,17 +460,15 @@ function buildRel(oc,vc,uc,pc){
 ══════════════════════════════════════════ */
 function getPayload(){
   const records=A.all
-    .filter(x=>(x.wave && x.wave!=='—') || (x.level==='OZ' && (x.outreachStatus!=='New'||x.owner||x.note)))
+    .filter(x=>(x.wave && x.wave!=='—') || (x.outreachStatus!=='New'||x.owner||x.note))
     .map(x=>({
       id:x.id,
       wave:x.wave||'—',
-      ...(x.level==='OZ'?{
-        outreachStatus:x.outreachStatus,
-        owner:x.owner,
-        note:x.note
-      }:{})
+      outreachStatus:x.outreachStatus || 'New',
+      owner:x.owner || '',
+      note:x.note || ''
     }));
-  return{version:3,exported:new Date().toISOString(),records};
+  return{version:4,exported:new Date().toISOString(),records};
 }
 function applyPayload(data){
   const rows=data?.records || data?.oz || [];
@@ -494,11 +478,9 @@ function applyPayload(data){
     const s=m.get(rec.id);
     if(!s)return;
     rec.wave=s.wave || rec.wave || '—';
-    if(rec.level==='OZ'){
-      rec.outreachStatus=s.outreachStatus || rec.outreachStatus;
-      rec.owner=s.owner || rec.owner;
-      rec.note=s.note || rec.note;
-    }
+    rec.outreachStatus=s.outreachStatus || rec.outreachStatus || 'New';
+    rec.owner=s.owner || rec.owner || '';
+    rec.note=s.note || rec.note || '';
   });
 }
 function saveLocal(){localStorage.setItem('dkg26_state_v2',JSON.stringify(getPayload()))}
@@ -534,7 +516,7 @@ function applyFilters(recs){
 const getFiltered=()=>applyFilters(A.all);
 
 /* ══════════════════════════════════════════
-   MAP — FIXED LINE LOGIC
+   MAP
 ══════════════════════════════════════════ */
 function renderMap(){
   LY.oz.clearLayers();LY.center.clearLayers();LY.partner.clearLayers();LY.lines.clearLayers();
@@ -621,7 +603,7 @@ function itemCard(r,sel,opts={}){
   const isSel=sel.has(r.id),isFoc=r.id===A.focusedOzId,isHigh=r.id===A.highlightedId;
   const warn=r.level==='OZ'&&certWarn(r.certUntil);
   return`<div class="item${isFoc?' focused':isHigh?' highlighted':''}">
-    <div class="itags">${typeTag(r)}${wTag(r.wave)}${r.level==='OZ'?sBadge(r.outreachStatus):''}</div>
+    <div class="itags">${typeTag(r)}${wTag(r.wave)}${sBadge(r.outreachStatus)}</div>
     <div class="iname">${esc(r.name)}</div>
     <div class="imeta">${esc(r.city||'')}${r.subtitle&&r.subtitle!==r.organ?` · ${esc(r.subtitle)}`:''}${r.contact?`<br>${esc(r.contact)}`:''}${r.email?`<br><a href="mailto:${esc(r.email)}">${esc(r.email)}</a>`:''}${r.phone?`<br>${esc(r.phone)}`:''}${r.certUntil?`<br>Cert. until: <strong>${esc(r.certUntil)}</strong>`:''}</div>
     ${warn?`<div class="warn-cert">⚠️ Cert expires soon — high priority</div>`:''}
@@ -645,7 +627,7 @@ function renderExploreList(){
 function renderFocusPanel(){
   const panel=document.getElementById('focusPanel'),sel=getSel();
 
-  if(A.highlightedId&&!A.focusedOzId){
+  if(A.highlightedId && !A.focusedOzId){
     const r=A.byId.get(A.highlightedId);
     if(!r){panel.innerHTML='<div style="padding:20px" class="empty">Not found.</div>';return}
     const parentOzs=r.level==='CENTER'
@@ -654,7 +636,7 @@ function renderFocusPanel(){
     const isSel=sel.has(r.id);
     panel.innerHTML=`<div style="padding:12px;display:flex;flex-direction:column;gap:8px">
       <div style="display:flex;align-items:center;justify-content:space-between">
-        <div class="itags">${typeTag(r)} ${wTag(r.wave)}</div>
+        <div class="itags">${typeTag(r)} ${wTag(r.wave)} ${sBadge(r.outreachStatus)}</div>
         <button id="closeFocus" class="mb">✕</button>
       </div>
       <div class="iname" style="font-size:14px;font-family:var(--serif);font-style:italic">${esc(r.name)}</div>
@@ -663,19 +645,22 @@ function renderFocusPanel(){
         ?`<div class="imeta"><strong>Parent OZ${parentOzs.length>1?'s':''}:</strong><br>${parentOzs.map(o=>`<button class="mb" style="margin-top:3px" data-focus="${esc(o.id)}">${esc(o.name)}</button>`).join(' ')}</div>`
         :'<div class="imeta">No parent OZ in database.</div>'}
       <div class="r2">
-        <select id="entityWave">
-          ${WAVES.map(v=>`<option value="${v}"${r.wave===v?' selected':''}>${v}</option>`).join('')}
-        </select>
-        <div></div>
+        <select id="entityWave">${WAVES.map(v=>`<option value="${v}"${r.wave===v?' selected':''}>${v}</option>`).join('')}</select>
+        <select id="entityStatus">${STATUSES.map(v=>`<option value="${v}"${r.outreachStatus===v?' selected':''}>${v}</option>`).join('')}</select>
       </div>
+      <input type="text" id="entityOwner" placeholder="Owner…" value="${esc(r.owner||'')}"/>
+      <textarea id="entityNote" placeholder="Note…">${esc(r.note||'')}</textarea>
       <div class="iactions">
-        <button id="saveEntityWaveBtn" class="mb p">Save wave</button>
+        <button id="saveEntityBtn" class="mb p">Save</button>
         <button class="mb${isSel?' sel':''}" data-toggle="${esc(r.id)}">${isSel?'✓ Selected':'+ Outreach'}</button>
       </div>
     </div>`;
     document.getElementById('closeFocus')?.addEventListener('click',()=>{A.highlightedId=null;renderAll()});
-    document.getElementById('saveEntityWaveBtn')?.addEventListener('click',()=>{
+    document.getElementById('saveEntityBtn')?.addEventListener('click',()=>{
       r.wave=document.getElementById('entityWave').value;
+      r.outreachStatus=document.getElementById('entityStatus').value;
+      r.owner=document.getElementById('entityOwner').value.trim();
+      r.note=document.getElementById('entityNote').value.trim();
       saveLocal();
       renderAll();
     });
@@ -769,7 +754,7 @@ function renderPipeline(){
     if(counts[rec.wave]){
       counts[rec.wave].total++;
       counts[rec.wave][rec.level]=(counts[rec.wave][rec.level]||0)+1;
-      if(rec.level==='OZ')counts[rec.wave][rec.outreachStatus]=(counts[rec.wave][rec.outreachStatus]||0)+1;
+      counts[rec.wave][rec.outreachStatus]=(counts[rec.wave][rec.outreachStatus]||0)+1;
     }
   });
 
@@ -811,10 +796,10 @@ function renderPipeline(){
   const el=document.getElementById('pipelineList');
   if(!active.length){el.innerHTML=`<div class="empty">${wf==='ALL'?'No records assigned yet. Focus a record and set its wave.':'No records in '+wf+' yet.'}</div>`;return}
   el.innerHTML=active.map(rec=>`<div class="item">
-    <div class="itags">${typeTag(rec)} ${wTag(rec.wave)}${rec.level==='OZ'?' '+sBadge(rec.outreachStatus):''}${rec.level==='OZ'&&certWarn(rec.certUntil)?'<span style="font-size:10px;color:var(--warn);font-weight:700;margin-left:2px">⚠️</span>':''}</div>
+    <div class="itags">${typeTag(rec)} ${wTag(rec.wave)} ${sBadge(rec.outreachStatus)}${rec.level==='OZ'&&certWarn(rec.certUntil)?'<span style="font-size:10px;color:var(--warn);font-weight:700;margin-left:2px">⚠️</span>':''}</div>
     <div class="iname">${esc(rec.name)}</div>
-    <div class="imeta">${esc(rec.city||'')}${rec.level==='OZ'&&rec.owner?` · <strong>${esc(rec.owner)}</strong>`:''}</div>
-    ${rec.level==='OZ'&&rec.note?`<div class="imeta" style="font-style:italic;margin-top:2px">${esc(rec.note)}</div>`:''}
+    <div class="imeta">${esc(rec.city||'')}${rec.owner?` · <strong>${esc(rec.owner)}</strong>`:''}</div>
+    ${rec.note?`<div class="imeta" style="font-style:italic;margin-top:2px">${esc(rec.note)}</div>`:''}
     <div class="iactions">
       ${rec.level==='OZ'
         ?`<button class="mb" data-focus="${esc(rec.id)}">Focus</button>`
@@ -910,7 +895,7 @@ function switchTab(t){
 function exportCsv(){
   const sel=[...getSel()].map(id=>A.byId.get(id)).filter(Boolean);
   if(!sel.length){alert('No accounts in outreach selection.');return}
-  const rows=sel.map(x=>({company:x.name,email:x.email||'',phone:x.phone||'',website:x.website||'',address:x.street||'',zip:x.zip||'',city:x.city||'',state:x.region||'',country:'Germany',level:x.level,oz_type:x.organ||'',contact_person:x.contact||'',dkg_reg_nr:x.regNr||'',cert_until:x.certUntil||'',wave:x.wave||'',outreach_status:x.level==='OZ'?x.outreachStatus||'New':'',owner:x.level==='OZ'?x.owner||'':'',note:x.level==='OZ'?x.note||'':''}));
+  const rows=sel.map(x=>({company:x.name,email:x.email||'',phone:x.phone||'',website:x.website||'',address:x.street||'',zip:x.zip||'',city:x.city||'',state:x.region||'',country:'Germany',level:x.level,oz_type:x.organ||'',contact_person:x.contact||'',dkg_reg_nr:x.regNr||'',cert_until:x.certUntil||'',wave:x.wave||'',outreach_status:x.outreachStatus||'New',owner:x.owner||'',note:x.note||''}));
   const hdr=Object.keys(rows[0]);
   const csv=[hdr.join(','),...rows.map(r=>hdr.map(h=>{const v=String(r[h]??'');return/[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v}).join(','))].join('\n');
   dl(`dkg_outreach_${new Date().toISOString().slice(0,10)}.csv`,csv,'text/csv;charset=utf-8');
